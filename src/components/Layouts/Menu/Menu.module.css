@@ -1,0 +1,88 @@
+.mainTop{
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--bg1);
+  z-index: 1000;
+}
+
+.mainTop img{
+  margin-left: 15px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.iconBar{
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.iconBar svg, .iconBar path{
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.mainMenuSide{
+  width: 100%;
+  max-width: 250px;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(10, 10, 10, .95);
+  transition: all .2s;
+  z-index: 1000;
+}
+
+.menuTop{
+  width: 100%;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menuTop:hover{
+  background-color: var(--clr0);
+}
+
+.menuTop svg, .menuTop path{
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.menuTop h1{
+  margin-top: 10px !important;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.menuList a{
+  padding: 10px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.menuList a:hover{
+  background-color: var(--clr0);
+}
+
+.menuList svg, .menuList path, .menuList h1{
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.menuList h1{
+  margin-left: 5px !important;
+}

@@ -2,6 +2,7 @@ import { BasicLayout } from '@/layouts';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Calendario, CalendarioForm } from '@/components/Tareas';
+import { ProtectedRoute } from '@/components/Layouts';
 
 export default function Tareas() {
   const [events, setEvents] = useState([]);
@@ -27,12 +28,20 @@ export default function Tareas() {
   };
 
   return (
-    <BasicLayout relative>
-      <div className="container mx-auto">
-        <h1 className="text-2xl font-bold my-4">Calendario</h1>
-        <CalendarioForm onEventAdded={handleEventAdded} />
-        <Calendario events={events} />
-      </div>
-    </BasicLayout>
-  );
+
+    <ProtectedRoute>
+
+      <BasicLayout relative>
+
+        <div className="container mx-auto">
+          <h1 className="text-2xl font-bold my-4">Calendario</h1>
+          <CalendarioForm onEventAdded={handleEventAdded} />
+          <Calendario events={events} />
+        </div>
+
+      </BasicLayout>
+
+    </ProtectedRoute>
+
+  )
 }

@@ -1,14 +1,16 @@
 import { MoonLoader } from 'react-spinners'
-import styles from './Loading.module.css'
 import classNames from 'classnames'
+import styles from './Loading.module.css'
 
 export function Loading(props) {
 
   const {size, loading} = props
 
   const loadingClass = classNames({
-    [styles.loadingLarge]: loading === true, 
-    [styles.loadingMini]: loading === false 
+    [styles.loadingMain]: loading === 0,
+    [styles.loadingLarge]: loading === 1, 
+    [styles.loadingMiddle]: loading === 2, 
+    [styles.loadingMini]: loading === 3  
   });
 
   return (
@@ -17,7 +19,7 @@ export function Loading(props) {
       <MoonLoader
         color='orange'
         size={size}
-        speedMultiplier={1}
+        speedMultiplier={.8}
       />
     </div>
 

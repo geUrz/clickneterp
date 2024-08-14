@@ -8,7 +8,9 @@ export function IconClose(props) {
   return (
 
     <div className={styles.icon} onClick={onOpenClose}>
-      <FaTimes />
+      <div>
+        <FaTimes />
+      </div>
     </div>
 
   )

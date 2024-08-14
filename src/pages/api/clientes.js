@@ -1,4 +1,4 @@
-import pool from "@/libs/db"
+import connection from "@/libs/db"
 
 export default async function handler(req, res) {
     const { id } = req.query;
@@ -7,7 +7,7 @@ export default async function handler(req, res) {
         if (id) {
             // Obtener un cliente por ID
             try {
-                const [rows] = await pool.query('SELECT id, cliente, contacto, direccion, cel, email FROM clientes WHERE id = ?', [id])
+                const [rows] = await connection.query('SELECT id, cliente, contacto, direccion, cel, email FROM clientes WHERE id = ?', [id])
 
                 if (rows.length === 0) {
                     return res.status(404).json({ error: 'Cliente no encontrado' });
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         } else {
             // Obtener todos los clientes
             try {
-                const [rows] = await pool.query('SELECT id, cliente, contacto, direccion, cel, email FROM clientes');
+                const [rows] = await connection.query('SELECT id, cliente, contacto, direccion, cel, email FROM clientes');
                 res.status(200).json(rows)
             } catch (error) {
                 res.status(500).json({ error: error.message })
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'Todos los datos son obligatorios' })
             }
 
-            const [result] = await pool.query('INSERT INTO clientes (cliente, contacto, cel, direccion, email) VALUES (?, ?, ?, ?, ?)', [cliente, contacto, cel, direccion, email])
+            const [result] = await connection.query('INSERT INTO clientes (cliente, contacto, cel, direccion, email) VALUES (?, ?, ?, ?, ?)', [cliente, contacto, cel, direccion, email])
             const newClient = { id: result.insertId }
             res.status(201).json(newClient)
         } catch (error) {
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         }
 
         try {
-            const [result] = await pool.query('UPDATE clientes SET cliente = ?, contacto = ?, cel = ?, direccion = ?, email = ? WHERE id = ?', [cliente, contacto, cel, direccion, email, id])
+            const [result] = await connection.query('UPDATE clientes SET cliente = ?, contacto = ?, cel = ?, direccion = ?, email = ? WHERE id = ?', [cliente, contacto, cel, direccion, email, id])
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Cliente no encontrado' })
@@ -68,10 +68,10 @@ export default async function handler(req, res) {
 
         try {
             // Actualizar la columna client_id en la tabla notas a NULL para el cliente que se va a eliminar
-            await pool.query('UPDATE notas SET cliente_id = NULL WHERE cliente_id = ?', [id])
+            await connection.query('UPDATE notas SET cliente_id = NULL WHERE cliente_id = ?', [id])
 
             // Ahora eliminar el cliente
-            const [result] = await pool.query('DELETE FROM clientes WHERE id = ?', [id])
+            const [result] = await connection.query('DELETE FROM clientes WHERE id = ?', [id])
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Cliente no encontrado' })

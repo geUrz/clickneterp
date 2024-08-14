@@ -6,9 +6,9 @@ import axios from 'axios'
 
 export function ReciboConceptosForm(props) {
 
-  const { onOpenCloseForm } = props
+  const { reciboId, onAddConcept, onOpenCloseForm, onToastSuccess, reload, onReload} = props
 
-  const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
+  const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
 
   const handleChange = (e) => {
@@ -48,7 +48,7 @@ export function ReciboConceptosForm(props) {
 
     if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
       try {
-        const response = await axios.post(`/api/conceptos`, {
+        const response = await axios.post(`/api/recibos/conceptos`, {
           recibo_id: reciboId,
           ...newConcept,
         })
@@ -58,10 +58,12 @@ export function ReciboConceptosForm(props) {
           if (id) {
             const newConceptWithId = { ...newConcept, id }
             onAddConcept(newConceptWithId)
-            setNewConcept({ tipo: '', concepto: '', cantidad: '', precio: '' })
+            setNewConcept({ tipo: '', concepto: '', precio: '', cantidad: '' })
+
+            onReload()
             onToastSuccess()
             onOpenCloseForm()
-            onReload()
+
           } else {
             console.error('Error al agregar el concepto: El ID no se encuentra en la respuesta del servidor', response);
           }

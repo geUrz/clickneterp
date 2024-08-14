@@ -1,12 +1,12 @@
 import { BasicLayout, BasicModal } from '@/layouts'
-import styles from './recibos.module.css'
-import { Add, Title, ToastSuccess } from '@/components/Layouts'
+import { Add, ProtectedRoute, Title, ToastSuccess } from '@/components/Layouts'
 import { useState } from 'react'
 import { ReciboForm, RecibosLista, RecibosRowHeadMain } from '@/components/Recibos'
+import styles from './recibos.module.css'
 
 export default function Recibos(props) {
 
-  const {rowMain=true} = props
+  const { rowMain = true } = props
 
   const [reload, setReload] = useState()
 
@@ -16,7 +16,7 @@ export default function Recibos(props) {
 
   const onOpenClose = () => setShow((prevState) => !prevState)
 
-  const[toastSuccess, setToastSuccess] = useState(false)
+  const [toastSuccess, setToastSuccess] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccess(true)
@@ -26,24 +26,28 @@ export default function Recibos(props) {
   }
 
   return (
-    
-    <BasicLayout relative onReload={onReload}>
 
-      <Title title='Recibos' />
-      
-      {toastSuccess && <ToastSuccess contain='Recibo creado exitosamente' onClose={() => setToast(false)} />}
+    <ProtectedRoute>
 
-      <RecibosRowHeadMain rowMain={rowMain} />
+      <BasicLayout relative onReload={onReload}>
 
-      <RecibosLista />
+        <Title title='Recibos' />
 
-      <Add onOpenClose={onOpenClose} />
+        {toastSuccess && <ToastSuccess contain='Recibo creado exitosamente' onClose={() => setToastSuccess(false)} />}
 
-      <BasicModal title='Crear recibo' show={show} onClose={onOpenClose}>
-        <ReciboForm reload={reload} onReload={onReload} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} /> 
-      </BasicModal>
+        <RecibosRowHeadMain rowMain={rowMain} />
 
-    </BasicLayout>
+        <RecibosLista reload={reload} onReload={onReload} />
+
+        <Add onOpenClose={onOpenClose} />
+
+        <BasicModal title='Crear recibo' show={show} onClose={onOpenClose}>
+          <ReciboForm reload={reload} onReload={onReload} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} />
+        </BasicModal>
+
+      </BasicLayout>
+
+    </ProtectedRoute>
 
   )
 }

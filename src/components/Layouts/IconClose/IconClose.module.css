@@ -1,11 +1,24 @@
 .icon{
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 16px;
+  right: 16px;
+}
+
+.icon{
   cursor: pointer;
 }
 
 .icon svg, .icon path{
-  font-size: 22.5px;
+  padding: 8px;
+  font-size: 34px;
+  border-radius: 50%;
   cursor: pointer;
+}
+
+.icon svg:hover,.icon path:hover{
+  background-color: var(--bg3);
+}
+
+.icon svg:active,.icon path:active{
+  background-color: var(--bg4);
 }

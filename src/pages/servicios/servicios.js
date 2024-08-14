@@ -1,14 +1,19 @@
 import { BasicLayout } from '@/layouts'
 import styles from './servicios.module.css'
+import { ProtectedRoute, Title } from '@/components/Layouts'
 
 export default function Servicios() {
   return (
-    
-    <BasicLayout relative>
 
+    <ProtectedRoute>
 
+      <BasicLayout relative>
 
-    </BasicLayout>
+        <Title title='cotizaciones' />
+
+      </BasicLayout>
+
+    </ProtectedRoute>
 
   )
 }

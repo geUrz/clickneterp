@@ -1,5 +1,5 @@
 import { IconClose } from '@/components/Layouts'
-import { Button, Confirm, Form, FormField, FormGroup, Input, Label } from 'semantic-ui-react'
+import { Button, Confirm, Form, FormField, FormGroup, Input, Label, TextArea } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import { RecibosRowHeadModal } from '../RecibosRowHead'
 import { FaCheck, FaTimes } from 'react-icons/fa'
@@ -7,14 +7,19 @@ import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
 import axios from 'axios'
 import styles from './ReciboForm.module.css'
 import { formatCurrency } from '@/helpers'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function ReciboForm(props) {
 
-  const { onOpenClose, onToastSuccess } = props
+  const {reload, onReload, onOpenClose, onToastSuccess} = props
 
+  const {user} = useAuth()
+ 
   const [showConfirm, setShowConfirm] = useState(false)
   const [cliente, setCliente] = useState('')
-  const [clientes, setClientes] = useState([]);
+  const [clientes, setClientes] = useState([])
+  const [usuarios, setUsuarios] = useState([])
+  const [usuario_id, setUsuarioId] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [conceptos, setConceptos] = useState([])
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
@@ -40,12 +45,27 @@ export function ReciboForm(props) {
       } catch (error) {
         console.error('Error al obtener clientes:', error)
       }
-    };
+    }
+
+    const fetchUsuarios = async () => {
+      try {
+        const response = await axios.get('/api/usuarios')
+        setUsuarios(response.data)
+      } catch (error) {
+        console.error('Error al obtener usuarios:', error)
+      }
+    }
+
     fetchClientes()
+    fetchUsuarios()
   }, [])
 
   const validarFormCliente = () => {
     const newErrors = {}
+
+    if (!usuario_id) {
+      newErrors.usuario_id = 'El campo es requerido'
+    }
 
     if (!cliente) {
       newErrors.cliente = 'El campo es requerido'
@@ -96,7 +116,7 @@ export function ReciboForm(props) {
     }
 
     try {
-      const response = await axios.post('/api/recibos', { cliente_id: cliente, descripcion })
+      const response = await axios.post('/api/recibos', { cliente_id: cliente, descripcion, usuario_id, createdId: user.id });
       const reciboId = response.data.id
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/conceptos', { recibo_id: reciboId, ...concepto })
@@ -158,9 +178,20 @@ export function ReciboForm(props) {
       <IconClose onOpenClose={onOpenClose} />
 
       <div className={styles.main}>
-
         <Form>
           <FormGroup widths='equal'>
+            <FormField error={!!errors.usuario_id}>
+              <Label>Tecnico</Label>
+              <select value={usuario_id} onChange={(e) => setUsuarioId(e.target.value)}>
+                <option value=""></option>
+                {usuarios.map((usuario) => (
+                  <option key={usuario.id} value={usuario.id}>
+                    {usuario.usuario}
+                  </option>
+                ))}
+              </select>
+              {errors.usuario_id && <span className={styles.error}>{errors.usuario_id}</span>}
+            </FormField>
             <FormField error={!!errors.cliente}>
               <Label>Cliente</Label>
               <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
@@ -173,11 +204,9 @@ export function ReciboForm(props) {
               </select>
               {errors.cliente && <span className={styles.error}>{errors.cliente}</span>}
             </FormField>
-          </FormGroup>
-          <FormGroup widths='equal'>
             <FormField error={!!errors.descripcion}>
               <Label>Descripción</Label>
-              <Input
+              <TextArea
                 type="text"
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}

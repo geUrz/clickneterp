@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise'
 
 // Configura la conexión a la base de datos
-const pool = mysql.createPool({
+const connection = mysql.createPool({
   host: 'viaduct.proxy.rlwy.net',   
   port: 27232,   
   user: 'root',           
@@ -10,9 +10,9 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-}); 
+})
 
-export default pool  
+export default connection  
 
 /* import mysql from 'mysql2/promise';
 

@@ -156,7 +156,7 @@ export function CotForm(props) {
 
   const { subtotal, iva, total } = calcularTotales()
 
-  const [toggleIVA, setToggleIVA] = useState()
+  const [toggleIVA, setToggleIVA] = useState(false)
 
   useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')

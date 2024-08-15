@@ -164,7 +164,7 @@ export function ReciboPDF(props) {
     })
 
 
-    const qrCodeText = `Nota ID: ${recibos.id}, Cliente: ${recibos.titulo}, Descripción: ${recibos.descripcion}`
+    const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
     doc.addImage(qrCodeDataUrl, 'PNG', 2, 118, 25, 25)
 

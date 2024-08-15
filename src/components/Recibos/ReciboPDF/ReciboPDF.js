@@ -59,7 +59,7 @@ export function ReciboPDF(props) {
     doc.text('Folio', 93, 40)
     doc.setFontSize(8)
     doc.setTextColor(120, 120, 120)
-    doc.text(`# ${formatId(recibos.id)}`, 89.8, 44)
+    doc.text(`${formatId(recibos.id)}`, 89.8, 44)
 
     doc.setFontSize(9)
     doc.setTextColor(0, 0, 0)

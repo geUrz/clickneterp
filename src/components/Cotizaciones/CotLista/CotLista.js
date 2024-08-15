@@ -4,7 +4,7 @@ import styles from './CotLista.module.css'
 import axios from 'axios'
 import { Confirm, ListEmpty, Loading, ToastSuccess } from '@/components/Layouts'
 import { FaCheck, FaInfoCircle, FaTimes } from 'react-icons/fa'
-import { formatClientId } from '@/helpers'
+import { formatClientId, formatId } from '@/helpers'
 import { BasicModal } from '@/layouts'
 import { CotDetalles } from '../CotDetalles'
 
@@ -133,7 +133,7 @@ export function CotLista(props) {
           <div className={styles.main}>
             {map(cotizaciones, (cotizacion) => (
               <div key={cotizacion.id} className={styles.rowMap} onClick={() => onOpenClose(cotizacion)}>
-                <h1>{formatClientId(cotizacion.id)}</h1>
+                <h1>{formatId(cotizacion.id)}</h1>
                 <h1>{cotizacion.cliente}</h1>
                 <h1>{cotizacion.descripcion}</h1>
                 <h1><FaInfoCircle /></h1>

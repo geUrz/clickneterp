@@ -103,7 +103,7 @@ export function CotDetalles(props) {
             </div>
             <div>
               <h1>Folio</h1>
-              <h1>#{formatId(cotizaciones.id)}</h1>
+              <h1>{formatId(cotizaciones.id)}</h1>
             </div>
           </div>
           <div className={styles.box1_2}>

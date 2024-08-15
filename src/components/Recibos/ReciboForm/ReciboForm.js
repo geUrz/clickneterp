@@ -5,9 +5,9 @@ import { RecibosRowHeadModal } from '../RecibosRowHead'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
 import axios from 'axios'
-import styles from './ReciboForm.module.css'
 import { formatCurrency } from '@/helpers'
 import { useAuth } from '@/contexts/AuthContext'
+import styles from './ReciboForm.module.css'
 
 export function ReciboForm(props) {
 
@@ -19,8 +19,6 @@ export function ReciboForm(props) {
 
   const [cliente, setCliente] = useState('')
   const [clientes, setClientes] = useState([])
-  const [usuarios, setUsuarios] = useState([])
-  const [usuario_id, setUsuarioId] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [conceptos, setConceptos] = useState([])
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
@@ -45,27 +43,13 @@ export function ReciboForm(props) {
       }
     }
 
-    const fetchUsuarios = async () => {
-      try {
-        const response = await axios.get('/api/usuarios')
-        setUsuarios(response.data)
-      } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-      }
-    }
-
     fetchClientes()
-    fetchUsuarios()
   }, [])
 
   const [errors, setErrors] = useState({})
 
   const validarFormCliente = () => {
     const newErrors = {}
-
-    if (!usuario_id) {
-      newErrors.usuario_id = 'El campo es requerido'
-    }
 
     if (!cliente) {
       newErrors.cliente = 'El campo es requerido'
@@ -116,7 +100,7 @@ export function ReciboForm(props) {
     }
 
     try {
-      const response = await axios.post('/api/recibos/recibos', { cliente_id: cliente, descripcion, usuario_id, createdId: user.id });
+      const response = await axios.post('/api/recibos/recibos', { cliente_id: cliente, descripcion, createdId: user.id });
       const reciboId = response.data.id
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/recibos/conceptos', { recibo_id: reciboId, ...concepto })
@@ -184,18 +168,6 @@ export function ReciboForm(props) {
       <div className={styles.main}>
         <Form>
           <FormGroup widths='equal'>
-            <FormField error={!!errors.usuario_id}>
-              <Label>Tecnico</Label>
-              <select value={usuario_id} onChange={(e) => setUsuarioId(e.target.value)}>
-                <option value=""></option>
-                {usuarios.map((usuario) => (
-                  <option key={usuario.id} value={usuario.id}>
-                    {usuario.usuario}
-                  </option>
-                ))}
-              </select>
-              {errors.usuario_id && <span className={styles.error}>{errors.usuario_id}</span>}
-            </FormField>
             <FormField error={!!errors.cliente}>
               <Label>Cliente</Label>
               <select value={cliente} onChange={(e) => setCliente(e.target.value)}>

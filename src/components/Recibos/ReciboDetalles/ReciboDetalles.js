@@ -184,11 +184,11 @@ export function ReciboDetalles(props) {
 
         <div className={styles.footerDetalles}>
           <div>
-            <h1>Recibo creado por:
+            <h1>creado por:
               {!recibos ? (
                 <span> - no disponible -</span>
               ) : (
-                <span> {recibos.creador_usuario}</span>
+                <span> {recibos.usuario}</span>
               )}
             </h1>
           </div>

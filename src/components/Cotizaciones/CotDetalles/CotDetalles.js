@@ -1,5 +1,4 @@
 import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
-import styles from './CotDetalles.module.css'
 import { FaCheck, FaInfoCircle, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
 import { BasicModal, ModalForm } from '@/layouts'
 import { formatCurrency, formatDate, formatId } from '@/helpers'
@@ -11,6 +10,7 @@ import { CotPDF } from '../CotPDF'
 import { CotClienteDetalles } from '../CotClienteDetalles'
 import { CotConceptosForm } from '../CotConceptosForm'
 import axios from 'axios'
+import styles from './CotDetalles.module.css'
 
 export function CotDetalles(props) {
 
@@ -182,7 +182,7 @@ export function CotDetalles(props) {
 
         <div className={styles.footerDetalles}>
           <div>
-            <h1>Cotización creado por:
+            <h1>creado por:
               {!cotizaciones ? (
                 <span> - no disponible -</span>
               ) : (

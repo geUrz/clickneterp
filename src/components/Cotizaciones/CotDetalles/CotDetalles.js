@@ -1,28 +1,26 @@
-import { IconClose, ToastSuccess } from '@/components/Layouts'
-import { formatCurrency, formatDate, formatId } from '@/helpers'
-import { RecibosRowHeadModal } from '../RecibosRowHead'
-import { useEffect, useState } from 'react'
-import { BiSolidFilePdf, BiToggleLeft, BiToggleRight } from 'react-icons/bi'
+import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
+import styles from './CotDetalles.module.css'
 import { FaCheck, FaInfoCircle, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
-import { map, sumBy } from 'lodash'
-import { ReciboConceptos } from '../ReciboConceptos'
 import { BasicModal, ModalForm } from '@/layouts'
-import { ReciboConceptosForm } from '../ReciboConceptosForm'
-import { Confirm } from 'semantic-ui-react'
-import { ReciboPDF } from '../ReciboPDF'
-import styles from './ReciboDetalles.module.css'
-import { ReciboClienteDetalles } from '../ReciboClienteDetalles'
+import { formatCurrency, formatDate, formatId } from '@/helpers'
+import { CotRowHeadModal } from '../CotRowHead'
+import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
+import { useEffect, useState } from 'react'
+import { CotConceptos } from '../CotConceptos'
+import { CotPDF } from '../CotPDF'
+import { CotClienteDetalles } from '../CotClienteDetalles'
+import { CotConceptosForm } from '../CotConceptosForm'
 import axios from 'axios'
 
-export function ReciboDetalles(props) {
+export function CotDetalles(props) {
 
-  const {recibos, reciboId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm } = props
-  
+  const { cotizaciones, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm } = props
+ 
   const [showForm, setShowForm] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [currentConcept, setCurrentConcept] = useState(null)
-  const[toastSuccess, setToastSuccess] = useState(false)
-  const[infoCliente, setInfoCliente] = useState(false)
+  const [toastSuccess, setToastSuccess] = useState(false)
+  const [infoCliente, setInfoCliente] = useState(false)
   const [cliente, setCliente] = useState(null)
   
   const onToastSuccess = () => {
@@ -35,17 +33,17 @@ export function ReciboDetalles(props) {
   useEffect(() => {
     const obtenerCliente = async () => {
       try {
-        const response = await axios.get(`/api/clientes?cliente=${recibos.cliente}`)
+        const response = await axios.get(`/api/clientes?cliente=${cotizaciones.cliente}`)
         setCliente(response.data[0])
       } catch (error) {
         console.error('Error al obtener los clientes:', error)
       }
     }
 
-    if (recibos && recibos.cliente) {
+    if (cotizaciones && cotizaciones.cliente) {
       obtenerCliente()
     }
-  }, [recibos])
+  }, [cotizaciones])
 
   const onOpenCloseConfirm = (concepto) => {
     setShowConfirm((prevState) => !prevState)
@@ -55,7 +53,7 @@ export function ReciboDetalles(props) {
   const onOpenCloseForm = (concepto) => {
     setShowForm((prevState) => !prevState)
     setCurrentConcept(concepto.id)
-  } 
+  }
 
   const handleDeleteConcept = () => {
     onDeleteConcept(currentConcept)
@@ -79,7 +77,7 @@ export function ReciboDetalles(props) {
     localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
   }, [toggleIVA])
 
-  const subtotal = recibos.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
+  const subtotal = cotizaciones.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
   const iva = subtotal * 0.16
   const total = subtotal + iva
 
@@ -88,7 +86,7 @@ export function ReciboDetalles(props) {
   }
 
   return (
-    
+
     <>
 
       <IconClose onOpenClose={onOpenClose} />
@@ -101,48 +99,48 @@ export function ReciboDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Cliente</h1>
-              <h1 onClick={onOpenCliente}>{recibos.cliente} <FaInfoCircle /></h1>
+              <h1 onClick={onOpenCliente}>{cotizaciones.cliente}<FaInfoCircle /></h1>
             </div>
             <div>
               <h1>Folio</h1>
-              <h1>#{formatId(recibos.id)}</h1>
+              <h1>#{formatId(cotizaciones.id)}</h1>
             </div>
           </div>
           <div className={styles.box1_2}>
             <div>
               <h1>Descripcion</h1>
-              <h1>{recibos.descripcion}</h1>
+              <h1>{cotizaciones.descripcion}</h1>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h1>{formatDate(recibos.createdAt)}</h1>
+              <h1>{formatDate(cotizaciones.createdAt)}</h1>
             </div>
           </div>
-        </div> 
+        </div>
 
-        <RecibosRowHeadModal rowMain/>
+        <CotRowHeadModal rowMain />
 
-        <ReciboConceptos conceptos={recibos.conceptos} onOpenCloseConfirm={onOpenCloseConfirm} handleDeleteConcept={handleDeleteConcept} />
+        <CotConceptos conceptos={cotizaciones.conceptos} onOpenCloseConfirm={onOpenCloseConfirm} handleDeleteConcept={handleDeleteConcept} />
 
         <div className={styles.iconPlus}>
           <div onClick={onOpenCloseForm}>
             <FaPlus />
           </div>
         </div>
-        
+
         <div className={styles.box3}>
           <div className={styles.box3_1}>
             <h1>Subtotal:</h1>
-            
+
             {!toggleIVA ? (
-              
+
               <div className={styles.toggleOFF} onClick={onIVA}>
                 <BiToggleLeft />
                 <h1>IVA:</h1>
               </div>
 
             ) : (
-              
+
               <div className={styles.toggleON} onClick={onIVA}>
                 <BiToggleRight />
                 <h1>IVA:</h1>
@@ -154,20 +152,20 @@ export function ReciboDetalles(props) {
           </div>
 
           <div className={styles.box3_2}>
-            
+
             {!toggleIVA ? (
               <>
-              
-                <h1>-</h1>   
-                <h1>-</h1> 
-              
-              </>  
+
+                <h1>-</h1>
+                <h1>-</h1>
+
+              </>
             ) : (
               <>
 
                 <h1>${formatCurrency(subtotal)}</h1>
                 <h1>${formatCurrency(iva)}</h1>
-              
+
               </>
             )}
 
@@ -180,15 +178,15 @@ export function ReciboDetalles(props) {
           </div>
         </div>
 
-        <ReciboPDF recibos={recibos} conceptos={recibos.conceptos} />
+        <CotPDF cliente={cliente} cotizaciones={cotizaciones} conceptos={cotizaciones.conceptos} />
 
         <div className={styles.footerDetalles}>
           <div>
-            <h1>Recibo creado por:
-              {!recibos ? (
+            <h1>Cotización creado por:
+              {!cotizaciones ? (
                 <span> - no disponible -</span>
               ) : (
-                <span> {recibos.creador_usuario}</span>
+                <span> {cotizaciones.usuario}</span>
               )}
             </h1>
           </div>
@@ -200,11 +198,11 @@ export function ReciboDetalles(props) {
       </div>
 
       <BasicModal title='Detalles del cliente' show={infoCliente} onClose={onOpenCliente}>
-        <ReciboClienteDetalles cliente={cliente} onOpenClose={onOpenCliente} />
+        <CotClienteDetalles cliente={cliente} onOpenClose={onOpenCliente} />
       </BasicModal>
 
       <ModalForm title='Agregar concepto' showForm={showForm} onClose={onOpenCloseForm}>
-        <ReciboConceptosForm reload={reload} onReload={onReload} onOpenCloseForm={onOpenCloseForm} onAddConcept={onAddConcept} reciboId={reciboId.id} onToastSuccess={onToastSuccess} />
+        <CotConceptosForm reload={reload} onReload={onReload} onOpenCloseForm={onOpenCloseForm} onAddConcept={onAddConcept} cotizacionId={cotizacionId.id} onToastSuccess={onToastSuccess} />
       </ModalForm>
 
       <Confirm
@@ -223,7 +221,7 @@ export function ReciboDetalles(props) {
         onCancel={onOpenCloseConfirm}
         content='¿ Estas seguro de eliminar el concepto ?'
       />
-    
+
     </>
 
   )

@@ -54,7 +54,7 @@ export function RecibosLista(props) {
         const response = await axios.get('/api/recibos/recibos')
         setRecibos(response.data);
       } catch (error) {
-        console.error('Error al obtener los recibos:', error)
+          console.error('Error al obtener los recibos:', error)
       }
     }
  

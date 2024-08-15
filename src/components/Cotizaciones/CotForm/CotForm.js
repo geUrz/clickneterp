@@ -1,29 +1,35 @@
-import { IconClose } from '@/components/Layouts'
-import { Button, Confirm, Form, FormField, FormGroup, Input, Label, TextArea } from 'semantic-ui-react'
-import { useEffect, useState } from 'react'
-import { RecibosRowHeadModal } from '../RecibosRowHead'
-import { FaCheck, FaTimes } from 'react-icons/fa'
+import { Confirm, IconClose } from '@/components/Layouts'
+import styles from './CotForm.module.css'
+import { Button, Form, FormField, FormGroup, Input, Label, TextArea } from 'semantic-ui-react'
+import { CotRowHeadModal } from '../CotRowHead'
 import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
-import axios from 'axios'
-import styles from './ReciboForm.module.css'
 import { formatCurrency } from '@/helpers'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
+import { FaCheck, FaTimes } from 'react-icons/fa'
+import { FirmaDigital } from '@/components/Layouts/FirmaDigital'
 
-export function ReciboForm(props) {
+export function CotForm(props) {
 
-  const {reload, onReload, onOpenClose, onToastSuccess} = props
+  const { reload, onReload, onOpenClose, onToastSuccess } = props
 
-  const {user} = useAuth()
- 
+  const { user } = useAuth()
+
   const [showConfirm, setShowConfirm] = useState(false)
 
   const [cliente, setCliente] = useState('')
   const [clientes, setClientes] = useState([])
-  const [usuarios, setUsuarios] = useState([])
-  const [usuario_id, setUsuarioId] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [conceptos, setConceptos] = useState([])
-  const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
+  const [nuevoConcepto, setNuevoConcepto] = useState({
+    tipo: '',
+    concepto: '',
+    precio: '',
+    cantidad: ''
+  })
+
+  const [firmaDigital, setFirmaDigital] = useState(null)
 
   const onShowConfirm = (index) => {
     setConceptoAEliminar(index)
@@ -35,37 +41,10 @@ export function ReciboForm(props) {
     setShowConfirm(false)
   }
 
-  useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const response = await axios.get('/api/clientes')
-        setClientes(response.data)
-      } catch (error) {
-          console.error('Error al obtener clientes:', error)
-      }
-    }
-
-    const fetchUsuarios = async () => {
-      try {
-        const response = await axios.get('/api/usuarios')
-        setUsuarios(response.data)
-      } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-      }
-    }
-
-    fetchClientes()
-    fetchUsuarios()
-  }, [])
-
   const [errors, setErrors] = useState({})
 
-  const validarFormCliente = () => {
+  const validarForm = () => {
     const newErrors = {}
-
-    if (!usuario_id) {
-      newErrors.usuario_id = 'El campo es requerido'
-    }
 
     if (!cliente) {
       newErrors.cliente = 'El campo es requerido'
@@ -78,6 +57,7 @@ export function ReciboForm(props) {
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
+
   }
 
   const validarFormConceptos = () => {
@@ -91,40 +71,58 @@ export function ReciboForm(props) {
       newErrors.concepto = 'El campo es requerido'
     }
 
-    if (!nuevoConcepto.cantidad) {
-      newErrors.cantidad = 'El campo es requerido'
-    } else if (nuevoConcepto.cantidad <= 0) {
-      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
-    }
-
     if (!nuevoConcepto.precio) {
       newErrors.precio = 'El campo es requerido'
     } else if (nuevoConcepto.precio <= 0) {
       newErrors.precio = 'El precio debe ser mayor a 0'
     }
 
+    if (!nuevoConcepto.cantidad) {
+      newErrors.cantidad = 'El campo es requerido'
+    } else if (nuevoConcepto.cantidad <= 0) {
+      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
+    }
+
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
+
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get('/api/clientes')
+        setClientes(response.data)
+      } catch (error) {
+        console.error('Error al obtener clientes:', error)
+      }
+    })()
+  }, [])
 
   const crearRecibo = async (e) => {
     e.preventDefault()
 
-    if (!validarFormCliente()) {
+    if (!validarForm()) {
       return
     }
 
     try {
-      const response = await axios.post('/api/recibos/recibos', { cliente_id: cliente, descripcion, usuario_id, createdId: user.id });
-      const reciboId = response.data.id
+      const response = await axios.post('/api/cotizaciones/cotizaciones', {
+        cliente_id: cliente,
+        descripcion,
+        createdId: user.id,
+        firma: firmaDigital
+      })
+      const cotizacionId = response.data.id
       await Promise.all(conceptos.map(concepto =>
-        axios.post('/api/recibos/conceptos', { recibo_id: reciboId, ...concepto })
+        axios.post('/api/cotizaciones/conceptos', { cotizacion_id: cotizacionId, ...concepto })
       ))
       onToastSuccess()
-      setCliente('');
+      setCliente('')
       setDescripcion('')
       setConceptos([])
+      setFirmaDigital(null)
       onOpenClose()
       onReload()
     } catch (error) {
@@ -137,8 +135,8 @@ export function ReciboForm(props) {
     if (!validarFormConceptos()) {
       return
     }
-    setConceptos([...conceptos, nuevoConcepto]);
-    setNuevoConcepto({ tipo: '', concepto: '', cantidad: '', precio: '' })
+    setConceptos([...conceptos, nuevoConcepto])
+    setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '' })
   }
 
   const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
@@ -184,18 +182,6 @@ export function ReciboForm(props) {
       <div className={styles.main}>
         <Form>
           <FormGroup widths='equal'>
-            <FormField error={!!errors.usuario_id}>
-              <Label>Tecnico</Label>
-              <select value={usuario_id} onChange={(e) => setUsuarioId(e.target.value)}>
-                <option value=""></option>
-                {usuarios.map((usuario) => (
-                  <option key={usuario.id} value={usuario.id}>
-                    {usuario.usuario}
-                  </option>
-                ))}
-              </select>
-              {errors.usuario_id && <span className={styles.error}>{errors.usuario_id}</span>}
-            </FormField>
             <FormField error={!!errors.cliente}>
               <Label>Cliente</Label>
               <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
@@ -267,7 +253,7 @@ export function ReciboForm(props) {
 
         <div className={styles.section}>
 
-          <RecibosRowHeadModal rowMain />
+          <CotRowHeadModal rowMain />
 
           {conceptos.map((concepto, index) => (
             <div key={index} className={styles.rowMapConcept} onClick={() => onShowConfirm(index)}>
@@ -330,6 +316,8 @@ export function ReciboForm(props) {
           </div>
 
         </div>
+
+        <FirmaDigital onSave={setFirmaDigital} />
 
         <Button primary onClick={crearRecibo}>Crear</Button>
 

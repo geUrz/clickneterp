@@ -13,7 +13,7 @@ export function ReciboPDF(props) {
 
     if (!recibos) return
 
-    const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'true');
+    const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'true')
 
     const doc = new jsPDF(
       {

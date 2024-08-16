@@ -2,9 +2,8 @@ import { IconClose, ToastSuccess } from '@/components/Layouts'
 import { formatCurrency, formatDate, formatId } from '@/helpers'
 import { RecibosRowHeadModal } from '../RecibosRowHead'
 import { useEffect, useState } from 'react'
-import { BiSolidFilePdf, BiToggleLeft, BiToggleRight } from 'react-icons/bi'
+import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
 import { FaCheck, FaInfoCircle, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
-import { map, sumBy } from 'lodash'
 import { ReciboConceptos } from '../ReciboConceptos'
 import { BasicModal, ModalForm } from '@/layouts'
 import { ReciboConceptosForm } from '../ReciboConceptosForm'
@@ -62,22 +61,22 @@ export function ReciboDetalles(props) {
     setShowConfirm(false)
   }
 
-  /* const [toggleIVA, setToggleIVA] = useState(false)
+  const [toggleIVA, setToggleIVA] = useState(false)
 
   const onIVA = () => {
     setToggleIVA((prevState) => !prevState)
   }
 
   useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
+    const savedToggleIVA = localStorage.getItem('ontoggleIVA');
     if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
+      setToggleIVA(JSON.parse(savedToggleIVA));
     }
-  }, [])
-
+  }, []);
+  
   useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA]) */
+    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA));
+  }, [toggleIVA])  
 
   const subtotal = recibos.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
   const iva = subtotal * 0.16
@@ -134,7 +133,7 @@ export function ReciboDetalles(props) {
           <div className={styles.box3_1}>
             <h1>Subtotal:</h1>
             
-            {!true ? (
+            {!toggleIVA ? (
               
               <div className={styles.toggleOFF} onClick={onIVA}>
                 <BiToggleLeft />

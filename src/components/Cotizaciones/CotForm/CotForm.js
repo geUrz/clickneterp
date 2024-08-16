@@ -28,6 +28,7 @@ export function CotForm(props) {
     precio: '',
     cantidad: ''
   })
+  const [toggleIVA, setToggleIVA] = useState(false)
 
   const [firmaDigital, setFirmaDigital] = useState(null)
 
@@ -156,22 +157,20 @@ export function CotForm(props) {
 
   const { subtotal, iva, total } = calcularTotales()
 
-  const [toggleIVA, setToggleIVA] = useState(false)
-
   useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')
     if (savedToggleIVA) {
       setToggleIVA(JSON.parse(savedToggleIVA))
     }
   }, [])
-
+  
   useEffect(() => {
     localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
   }, [toggleIVA])
 
   const onIVA = () => {
     setToggleIVA(prevState => (!prevState))
-  }
+  } 
 
   return (
 

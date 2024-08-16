@@ -11,7 +11,7 @@ import { CotClienteDetalles } from '../CotClienteDetalles'
 import { CotConceptosForm } from '../CotConceptosForm'
 import axios from 'axios'
 import styles from './CotDetalles.module.css'
-import { Button, ButtonOr, Form, FormField, FormGroup, Label, TextArea } from 'semantic-ui-react'
+import { Button, Form, FormField, FormGroup, Label, TextArea } from 'semantic-ui-react'
 
 export function CotDetalles(props) {
 
@@ -73,10 +73,10 @@ export function CotDetalles(props) {
       setToggleIVA(JSON.parse(savedToggleIVA))
     }
   }, [])
-
+  
   useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
+    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA));
+  }, [toggleIVA]) 
 
   const subtotal = cotizaciones.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
   const iva = subtotal * 0.16

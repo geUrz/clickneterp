@@ -22,7 +22,7 @@ export function ReciboForm(props) {
   const [descripcion, setDescripcion] = useState('')
   const [conceptos, setConceptos] = useState([])
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
-  const [toggleIVA, setToggleIVA] = useState()
+  //const [toggleIVA, setToggleIVA] = useState()
 
   const onShowConfirm = (index) => {
     setConceptoAEliminar(index)
@@ -143,7 +143,7 @@ export function ReciboForm(props) {
 
   const { subtotal, iva, total } = calcularTotales()
 
-  useEffect(() => {
+  /* useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')
     if (savedToggleIVA) {
       setToggleIVA(JSON.parse(savedToggleIVA))
@@ -156,7 +156,7 @@ export function ReciboForm(props) {
 
   const onIVA = () => {
     setToggleIVA(prevState => (!prevState))
-  }
+  } */
 
   return (
 
@@ -254,16 +254,16 @@ export function ReciboForm(props) {
             <div className={styles.box3_1}>
               <h1>Subtotal:</h1>
 
-              {!toggleIVA ? (
+              {!true ? (
 
-                <div className={styles.toggleOFF} onClick={onIVA}>
+                <div className={styles.toggleOFF} /* onClick={onIVA} */>
                   <BiToggleLeft />
                   <h1>IVA:</h1>
                 </div>
 
               ) : (
 
-                <div className={styles.toggleON} onClick={onIVA}>
+                <div className={styles.toggleON} /* onClick={onIVA} */>
                   <BiToggleRight />
                   <h1>IVA:</h1>
                 </div>
@@ -275,7 +275,7 @@ export function ReciboForm(props) {
 
             <div className={styles.box3_2}>
 
-              {!toggleIVA ? (
+              {!true ? (
                 <>
 
                   <h1>-</h1>
@@ -291,7 +291,7 @@ export function ReciboForm(props) {
                 </>
               )}
 
-              {!toggleIVA ? (
+              {!true ? (
                 <h1>${formatCurrency(subtotal)}</h1>
               ) : (
                 <h1>${formatCurrency(total)}</h1>

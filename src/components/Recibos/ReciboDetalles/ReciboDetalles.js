@@ -62,7 +62,7 @@ export function ReciboDetalles(props) {
     setShowConfirm(false)
   }
 
-  const [toggleIVA, setToggleIVA] = useState(false)
+  /* const [toggleIVA, setToggleIVA] = useState(false)
 
   const onIVA = () => {
     setToggleIVA((prevState) => !prevState)
@@ -77,7 +77,7 @@ export function ReciboDetalles(props) {
 
   useEffect(() => {
     localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
+  }, [toggleIVA]) */
 
   const subtotal = recibos.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
   const iva = subtotal * 0.16
@@ -134,7 +134,7 @@ export function ReciboDetalles(props) {
           <div className={styles.box3_1}>
             <h1>Subtotal:</h1>
             
-            {!toggleIVA ? (
+            {!true ? (
               
               <div className={styles.toggleOFF} onClick={onIVA}>
                 <BiToggleLeft />

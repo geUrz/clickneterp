@@ -142,7 +142,7 @@ export function ReciboForm(props) {
 
   const { subtotal, iva, total } = calcularTotales()
 
-  const [toggleIVA, setToggleIVA] = useState(false)
+  const [toggleIVA, setToggleIVA] = useState()
 
   useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')

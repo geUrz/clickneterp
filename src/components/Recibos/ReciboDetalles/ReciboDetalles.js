@@ -62,7 +62,7 @@ export function ReciboDetalles(props) {
     setShowConfirm(false)
   }
 
-  const [toggleIVA, setToggleIVA] = useState()
+  const [toggleIVA, setToggleIVA] = useState(false)
 
   const onIVA = () => {
     setToggleIVA((prevState) => !prevState)

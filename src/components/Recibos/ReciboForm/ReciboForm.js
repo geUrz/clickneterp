@@ -22,6 +22,7 @@ export function ReciboForm(props) {
   const [descripcion, setDescripcion] = useState('')
   const [conceptos, setConceptos] = useState([])
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
+  const [toggleIVA, setToggleIVA] = useState()
 
   const onShowConfirm = (index) => {
     setConceptoAEliminar(index)
@@ -141,8 +142,6 @@ export function ReciboForm(props) {
   };
 
   const { subtotal, iva, total } = calcularTotales()
-
-  const [toggleIVA, setToggleIVA] = useState()
 
   useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')

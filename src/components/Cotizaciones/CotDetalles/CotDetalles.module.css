@@ -69,7 +69,7 @@
 
 .box3{
   padding-right: 3.5px !important;
-  margin-top: 30px;
+  margin-top: 20px;
   width: 100%;
   height: auto;
   display: flex;
@@ -78,7 +78,7 @@
 }
 
 .box3 h1{
-  font-size: 11.5px;
+  font-size: 12px;
 }
 
 .box3_1{
@@ -93,6 +93,10 @@
   padding: 3.5px 0 !important;
   font-size: 11px;
   text-align: right;
+}
+
+.formNota{
+  margin-top: 20px;
 }
 
 .iconPlus{

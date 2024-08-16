@@ -72,7 +72,7 @@ doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight);
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 70)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${formatId(cotizaciones.id)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`# ${formatId(cotizaciones.id)}`), 74)
+    doc.text(`${formatId(cotizaciones.id)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${formatId(cotizaciones.id)}`), 74)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)

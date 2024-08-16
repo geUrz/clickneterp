@@ -11,18 +11,19 @@ import { CotClienteDetalles } from '../CotClienteDetalles'
 import { CotConceptosForm } from '../CotConceptosForm'
 import axios from 'axios'
 import styles from './CotDetalles.module.css'
+import { Button, ButtonOr, Form, FormField, FormGroup, Label, TextArea } from 'semantic-ui-react'
 
 export function CotDetalles(props) {
 
   const { cotizaciones, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm } = props
- 
+
   const [showForm, setShowForm] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [currentConcept, setCurrentConcept] = useState(null)
   const [toastSuccess, setToastSuccess] = useState(false)
   const [infoCliente, setInfoCliente] = useState(false)
   const [cliente, setCliente] = useState(null)
-  
+
   const onToastSuccess = () => {
     setToastSuccess(true)
     setTimeout(() => {
@@ -177,6 +178,22 @@ export function CotDetalles(props) {
 
           </div>
         </div>
+
+        <div className={styles.formNota}>
+            <Form>
+              <FormGroup>
+                <FormField>
+                  <Label>
+                    Nota:
+                  </Label>
+                  <TextArea
+                    type="text"
+                  />
+                </FormField>
+              </FormGroup>
+              <Button secondary>Guardar nota</Button>
+            </Form>
+          </div>
 
         <CotPDF cliente={cliente} cotizaciones={cotizaciones} conceptos={cotizaciones.conceptos} />
 

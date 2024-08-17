@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
 import { FaCheck, FaTimes } from 'react-icons/fa'
-import { FirmaDigital } from '@/components/Layouts/FirmaDigital'
+//import { FirmaDigital } from '@/components/Layouts/FirmaDigital'
 
 export function CotForm(props) {
 
@@ -30,7 +30,7 @@ export function CotForm(props) {
   })
   const [toggleIVA, setToggleIVA] = useState(false)
 
-  const [firmaDigital, setFirmaDigital] = useState(null)
+  //const [firmaDigital, setFirmaDigital] = useState(null)
 
   const onShowConfirm = (index) => {
     setConceptoAEliminar(index)
@@ -113,7 +113,7 @@ export function CotForm(props) {
         cliente_id: cliente,
         descripcion,
         createdId: user.id,
-        firma: firmaDigital
+        //firma: firmaDigital
       })
       const cotizacionId = response.data.id
       await Promise.all(conceptos.map(concepto =>
@@ -123,7 +123,7 @@ export function CotForm(props) {
       setCliente('')
       setDescripcion('')
       setConceptos([])
-      setFirmaDigital(null)
+      //setFirmaDigital(null)
       onOpenClose()
       onReload()
     } catch (error) {
@@ -316,7 +316,7 @@ export function CotForm(props) {
 
         </div>
 
-        <FirmaDigital onSave={setFirmaDigital} />
+        {/* <FirmaDigital onSave={setFirmaDigital} /> */}
 
         <Button primary onClick={crearRecibo}>Crear</Button>
 

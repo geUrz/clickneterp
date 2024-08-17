@@ -20,7 +20,7 @@ export function CotLista(props) {
   const [toastSuccess, setToastSuccess] = useState(false)
   const [toastSuccessConfirm, setToastSuccessConfirm] = useState(false)
   const [toastSuccessDelete, setToastSuccessDelete] = useState(false)
-
+  
   const onToastSuccess = () => {
     setToastSuccess(true)
     setTimeout(() => {
@@ -46,7 +46,7 @@ export function CotLista(props) {
 
   useEffect(() => {
     fetchRecibos()
-  }, [])
+  }, [reload])
 
   const fetchRecibos = async () => {
     try {

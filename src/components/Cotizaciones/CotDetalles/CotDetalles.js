@@ -16,7 +16,7 @@ import { Button, Form, FormField, FormGroup, Label, TextArea } from 'semantic-ui
 export function CotDetalles(props) {
 
   const { cotizaciones, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm } = props
-
+  
   const [showForm, setShowForm] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [currentConcept, setCurrentConcept] = useState(null)
@@ -73,10 +73,10 @@ export function CotDetalles(props) {
       setToggleIVA(JSON.parse(savedToggleIVA))
     }
   }, [])
-  
+
   useEffect(() => {
     localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA));
-  }, [toggleIVA]) 
+  }, [toggleIVA])
 
   const subtotal = cotizaciones.conceptos.reduce((sum, concepto) => sum + concepto.precio * concepto.cantidad, 0)
   const iva = subtotal * 0.16
@@ -84,6 +84,31 @@ export function CotDetalles(props) {
 
   const onOpenCliente = () => {
     setInfoCliente((prevState) => !prevState)
+  }
+
+  const [nota, setNota] = useState(cotizaciones.nota || '')
+  const [cotizacionNota, setCotizacionNota] = useState('')
+  
+  const handleNotaChange = (e) => {
+    setNota(e.target.value);
+  }
+
+  const handleAddNota = async () => {
+    try {
+      const response = await axios.put(`/api/cotizaciones/cotizaciones?id=${cotizacionId.id}`, { nota });
+  
+      if (response.status === 200) {
+
+        const updateNota = {...cotizaciones , nota}
+        setCotizacionNota(updateNota)
+
+        onReload()
+        onToastSuccess()
+      }
+
+    } catch (error) {
+      console.error('Error al actualizar la nota:', error.response?.data || error.message);
+    }
   }
 
   return (
@@ -180,22 +205,24 @@ export function CotDetalles(props) {
         </div>
 
         <div className={styles.formNota}>
-            <Form>
-              <FormGroup>
-                <FormField>
-                  <Label>
-                    Nota:
-                  </Label>
-                  <TextArea
-                    type="text"
-                  />
-                </FormField>
-              </FormGroup>
-              <Button secondary>Guardar nota</Button>
-            </Form>
-          </div>
+          <Form>
+            <FormGroup>
+              <FormField>
+                <Label>
+                  Nota:
+                </Label>
+                <TextArea
+                  value={nota}
+                  onChange={handleNotaChange}
+                  placeholder="Escribe una nota aquí..."
+                />
+              </FormField>
+            </FormGroup>
+            <Button secondary onClick={handleAddNota}>Añadir nota</Button>
+          </Form>
+        </div>
 
-        <CotPDF cliente={cliente} cotizaciones={cotizaciones} conceptos={cotizaciones.conceptos} />
+        <CotPDF cliente={cliente} cotizaciones={cotizaciones} conceptos={cotizaciones.conceptos} cotizacionNota={cotizacionNota.nota} />
 
         <div className={styles.footerDetalles}>
           <div>

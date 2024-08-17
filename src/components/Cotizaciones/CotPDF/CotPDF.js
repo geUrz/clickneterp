@@ -7,8 +7,8 @@ import styles from './CotPDF.module.css'
 
 export function CotPDF(props) {
 
-  const {cliente, cotizaciones, conceptos} = props
-
+  const {cliente, cotizaciones, conceptos, cotizacionNota} = props
+    
   const generarPDF = async () => {
 
     if (!cotizaciones) return
@@ -147,12 +147,18 @@ doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight);
   
     const { subtotal, iva, total } = calcularTotales()
 
-    doc.setFontSize(`${font3}`)
+    doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Nota:', 15, 234)
-    doc.setFontSize(`${font3}`)
+    doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${cliente.contacto}`, 15, 238)
+    doc.text(`${
+      (cotizacionNota) === undefined ? (
+        cotizaciones.nota
+      ) : (
+        cotizacionNota
+      )
+    }`, 15, 238)
 
     const verticalData = [
       ...toggleIVA ? [
@@ -174,7 +180,7 @@ doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight);
       styles: {
         cellPadding: 1,
         valign: 'middle',
-        fontSize: `${font3}`,
+        fontSize: `${font2}`,
       },
       columnStyles: {
         0: { cellWidth: 20, fontStyle: 'bold', halign: 'right' },
@@ -183,12 +189,20 @@ doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight);
     })
 
 
+    doc.setFontSize(`${font2}`)
+    doc.setTextColor(0, 0, 0)
+    doc.text('• Pago en pesos.', 50, 255)
+    doc.text('• Se requiere el 50% de anticipo para dar inicio al proyecto.', 50, 260)
+    doc.text('• Todos nuestros equipos cuenta con 1 año de garantia', 50, 265)
+    doc.text('  por defecto de fabrica.', 50, 269)
+    doc.text('• Esta cotización tiene una vigencia de 15 dias.', 50, 274)
+
 
     const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
-    doc.addImage(qrCodeDataUrl, 'PNG', 10, 250, 40, 40)
+    doc.addImage(qrCodeDataUrl, 'PNG', 10, 245, 40, 40)
 
-    doc.save(`Cotización_${formatId(cotizaciones.id)}.pdf`)
+    doc.save(`cotización_${formatId(cotizaciones.id)}.pdf`)
   }
 
   return (

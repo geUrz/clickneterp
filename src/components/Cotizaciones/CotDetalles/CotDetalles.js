@@ -23,6 +23,11 @@ export function CotDetalles(props) {
   const [toastSuccess, setToastSuccess] = useState(false)
   const [infoCliente, setInfoCliente] = useState(false)
   const [cliente, setCliente] = useState(null)
+  const [editNota, setEditNota] = useState(!!notas.nota)
+
+  useEffect(() => {
+    setEditNota(!!notas.nota)
+  }, [notas.nota])
 
   const onToastSuccess = () => {
     setToastSuccess(true)
@@ -98,6 +103,8 @@ export function CotDetalles(props) {
       const response = await axios.put(`/api/cotizaciones/cotizaciones?id=${cotizacionId.id}`, { nota });
   
       if (response.status === 200) {
+
+        setEditNota(!!nota)
 
         const updateNota = {...cotizaciones , nota}
         setCotizacionNota(updateNota)
@@ -218,7 +225,9 @@ export function CotDetalles(props) {
                 />
               </FormField>
             </FormGroup>
-            <Button secondary onClick={handleAddNota}>Añadir nota</Button>
+            <Button secondary onClick={handleAddNota}>
+              {editNota ? 'Modificar nota' : 'Añadir nota'}
+            </Button>
           </Form>
         </div>
 

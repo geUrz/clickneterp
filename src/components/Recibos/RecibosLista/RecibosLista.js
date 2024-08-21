@@ -11,12 +11,11 @@ import styles from './RecibosLista.module.css'
 
 export function RecibosLista(props) {
 
-  const{reload, onReload} = props
+  const{reload, onReload, recibos} = props
 
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-
-  const [recibos, setRecibos] = useState()
+  
   const [reciboSeleccionado, setReciboSeleccionado] = useState(null)
   const[toastSuccess, setToastSuccess] = useState(false)
   const[toastSuccessConfirm, setToastSuccessConfirm] = useState(false)
@@ -44,21 +43,7 @@ export function RecibosLista(props) {
   }
 
   const onShowConfirm = () => setShowConfirm((prevState) => !prevState)
-
-  useEffect(() => {
-    fetchRecibos()
-  }, [])
-
-    const fetchRecibos = async () => {
-      try {
-        const response = await axios.get('/api/recibos/recibos')
-        setRecibos(response.data);
-      } catch (error) {
-          console.error('Error al obtener los recibos:', error)
-      }
-    }
  
-
   const onOpenClose = async (recibo) => {
     try {
       const response = await axios.get(`/api/recibos/conceptos?recibo_id=${recibo.id}`)

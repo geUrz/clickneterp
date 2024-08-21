@@ -12,7 +12,8 @@
   height: auto;
   font-size: 16px;
   font-family: 'Bebas' !important;
-  background-color: var(--clr0);
+  color: var(--clr2);
+  background-color: var(--bg0);
 }
 
 .main h1:nth-child(1){
@@ -40,5 +41,5 @@
 
 .main svg, .main path{
   font-size: 16.5px;
-  color: var(--clrBL2);
+  color: var(--clr2);
 }

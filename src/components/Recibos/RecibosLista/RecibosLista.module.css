@@ -49,7 +49,7 @@
 
 .rowMap svg, .rowMap path{
   font-size: 16.5px;
-  color: var(--clrBL2);
+  color: var(--clr2);
   cursor: pointer;
 }
 

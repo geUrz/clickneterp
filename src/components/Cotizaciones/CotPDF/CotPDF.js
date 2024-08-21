@@ -23,16 +23,16 @@ export function CotPDF(props) {
       }
     )
 
-    const logoImg = 'img/logo.png';
-const logoWidth = 50;
-const logoHeight = 14;
-const marginRightLogo = 15;
+    const logoImg = 'img/logo.png'
+    const logoWidth = 50
+    const logoHeight = 14
+    const marginRightLogo = 15
 
-const pageWidth = doc.internal.pageSize.getWidth();
+    const pageWidth = doc.internal.pageSize.getWidth()
 
-const xPosition = pageWidth - logoWidth - marginRightLogo;
+    const xPosition = pageWidth - logoWidth - marginRightLogo
 
-doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight);
+doc.addImage(logoImg, 'PNG', xPosition, 30, logoWidth, logoHeight)
 
     doc.setFont('helvetica')
 

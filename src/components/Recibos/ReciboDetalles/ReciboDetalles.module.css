@@ -63,8 +63,115 @@
 }
 
 .box1_2{
-  
-  padding: 10px 0 ;
+  padding: 10px 0;
+}
+
+.box1_2 div:nth-child(1){
+  padding-right: 10px;
+}
+
+.boxMain{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.box3_0{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.iconFirmaPlus{
+  margin-bottom: 20px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg1);
+  cursor: pointer;
+}
+
+.iconFirmaPlus:hover{
+  background-color: var(--bg2);
+}
+
+.iconFirmaPlus:active{
+  background-color: var(--bg3);
+}
+
+.iconFirmaPlus svg, .iconFirmaPlus path{
+  cursor: pointer;
+}
+
+.linea{
+  margin: 10px 0 5px 0;
+  width: 100%;
+  height: 1px;
+  background-color: azure;
+}
+
+.activateTrash{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(155, 0, 0, .9);
+  z-index: 1;
+  cursor: pointer;
+}
+
+.activateTrash:hover{
+  background-color: rgba(196, 0, 0, .9);
+}
+
+.activateTrash div{
+  cursor: pointer;
+}
+
+.activateTrash svg, .activateTrash path{
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.firmaIsMobile{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.firmaIsMobile svg, .firmaIsMobile path{
+  font-size: 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+.firmaIsMobile svg:hover path{
+  color: red;
+}
+
+.box3_0 h1{
+  font-size: 12px;
+}
+
+.formNota{
+  margin-top: 20px;
 }
 
 .box3{
@@ -141,14 +248,14 @@
 }
 
 .footerDetalles{
-  padding: 0 10px;
+  padding: 0 10px 0 20px;
   width: 100%;
   height: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: absolute;
-  bottom: 0px;
+  bottom: 20px;
   right: 0px;
 }
 

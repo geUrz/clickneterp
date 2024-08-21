@@ -1,7 +1,8 @@
 import { BasicLayout, BasicModal } from '@/layouts'
 import { Add, ProtectedRoute, Title, ToastSuccess } from '@/components/Layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ReciboForm, RecibosLista, RecibosRowHeadMain } from '@/components/Recibos'
+import axios from 'axios'
 import styles from './recibos.module.css'
 
 export default function Recibos(props) {
@@ -16,6 +17,8 @@ export default function Recibos(props) {
 
   const onOpenClose = () => setShow((prevState) => !prevState)
 
+  const [recibos, setRecibos] = useState()
+
   const [toastSuccess, setToastSuccess] = useState(false)
 
   const onToastSuccess = () => {
@@ -24,6 +27,18 @@ export default function Recibos(props) {
       setToastSuccess(false)
     }, 3000)
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get('/api/recibos/recibos')
+        setRecibos(response.data)
+        //onReload()
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [reload])
 
   return (
 
@@ -37,7 +52,7 @@ export default function Recibos(props) {
 
         <RecibosRowHeadMain rowMain={rowMain} />
 
-        <RecibosLista reload={reload} onReload={onReload} />
+        <RecibosLista reload={reload} onReload={onReload} recibos={recibos} />
 
         <Add onOpenClose={onOpenClose} />
 

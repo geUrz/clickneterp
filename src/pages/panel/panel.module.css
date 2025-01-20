@@ -18,8 +18,8 @@
 
 .boxContainer{
   margin: 10px;
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;

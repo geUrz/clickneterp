@@ -1,18 +1,20 @@
 {
-  "name": "clicknetmx-erp",
+  "name": "clickneterp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3002",
     "lint": "next lint"
   },
   "dependencies": {
     "axios": "^1.7.3",
     "bcrypt": "^5.1.1",
+    "cfdi": "^3.3.26",
     "classnames": "^2.5.1",
     "cookie": "^0.6.0",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.12",
     "formik": "^2.4.6",
     "googleapis": "^140.0.1",
@@ -24,12 +26,15 @@
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
-    "mysql2": "^3.10.3",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0",
     "next": "14.2.5",
-    "onesignal-cordova-plugin": "^5.2.4",
+    "nodemailer": "^6.9.16",
+    "onesignal-cordova-plugin": "^5.2.9",
     "qrcode": "^1.5.3",
     "react": "^18",
     "react-big-calendar": "^1.13.1",
+    "react-datepicker": "^7.6.0",
     "react-dom": "^18",
     "react-google-calendar-api": "^2.3.0",
     "react-icons": "^5.2.1",
@@ -37,6 +42,7 @@
     "react-spinners": "^0.14.1",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
+    "sharp": "^0.33.5",
     "yup": "^1.4.0"
   }
 }

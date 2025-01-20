@@ -3,54 +3,31 @@ import { size, map } from 'lodash'
 import styles from './UsuariosLista.module.css'
 import axios from 'axios'
 import { ListEmpty, Loading } from '@/components/Layouts'
-import { FaInfoCircle } from 'react-icons/fa'
-import { formatClientId } from '@/helpers'
+import { FaUser } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { UsuarioDetalles } from '../UsuarioDetalles'
 
 export function UsuariosLista(props) {
 
-  const {reload, onReload} = props
+  const { user, loading, reload, onReload, usuarios, onToastSuccessMod } = props
 
-  const [show, setShow] = useState(false)
-
-  const [usuarios, setUsuarios] = useState()
+  const [showDetalles, setShowDetalles] = useState(false)
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
 
-  useEffect(() => {
-  (async() => {
-    try {
-      const response = await axios.get('/api/usuarios')
-      setUsuarios(response.data)
-    } catch (error) {
-        console.error('Error al obtener los clientes:', error)
-    }
-  })()
-  }, [])
-
-  const onOpenClose = async (usuario) => {
-      try {
-        const response = await axios.get(`/api/usuarios?id=${usuario.id}`)
-        setUsuarioSeleccionado(response.data)
-        setShow(true)
-        onReload()
-      } catch (error) {
-          console.error('Error al obtener el usuario:', error)
-          if (error.response) {
-          console.error('Error response:', error.response.data)
-          }
-      }
+  const onOpenDetalles = (usuario) => {
+    setUsuarioSeleccionado(usuario)
+    setShowDetalles(true)
   }
 
-  const handleCloseModal = () => {
-    setShow(false)
+  const onCloseDetalles = () => {
     setUsuarioSeleccionado(null)
+    setShowDetalles(false)
   }
 
   return (
-    
+
     <>
-    
+
       {!usuarios ? (
         <Loading size={45} loading={1} />
       ) : (
@@ -59,21 +36,33 @@ export function UsuariosLista(props) {
         ) : (
           <div className={styles.main}>
             {map(usuarios, (usuario) => (
-              <div key={usuario.id} className={styles.rowMap} onClick={() => onOpenClose(usuario)}>
-                <h1>{formatClientId(usuario.id)}</h1>
-                <h1>{usuario.usuario}</h1>
-                <h1>{usuario.nivel}</h1>
-                <h1><FaInfoCircle /></h1>
+              <div key={usuario.id} className={styles.section} onClick={() => onOpenDetalles(usuario)}>
+                <div>
+                  <div className={styles.column1}>
+                    <FaUser />
+                  </div>
+                  <div className={styles.column2}>
+                    <div >
+                      <h1>Nombre</h1>
+                      <h2>{usuario.nombre}</h2>
+                    </div>
+                    <div >
+                      <h1>Usuario</h1>
+                      <h2>{usuario.usuario}</h2>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            )
+            )}
           </div>
         )
       )}
 
-      <BasicModal title='detalles del usuario' show={show} onClose={onOpenClose}>
-        <UsuarioDetalles reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onOpenClose={handleCloseModal} />
+      <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
+        <UsuarioDetalles user={user} loading={loading} reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
-    
+
     </>
 
   )

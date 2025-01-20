@@ -1,0 +1,357 @@
+.section{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.box1{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.box1 h1{
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clr1);
+  white-space: pre-line;
+}
+
+.box1 h2{
+  margin-top: 3px;
+  font-size: 12.5px;
+  white-space: pre-line;
+}
+
+
+.box1_1, .box1_2{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.box1_1 div, .box1_2 div{
+  margin: 5px 0;
+}
+
+.box1_1{
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.box1_1 h1, .box1_1 h2{
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.box1_2{
+  width: 35%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.box1_2 h1, .box1_2 h2{
+  text-align: right;
+}
+
+.pagina{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagina h1{
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clrBL0000);
+}
+
+.toggleEvi{
+  margin-top: 20px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleEvi h1{
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clrBL0000);
+}
+
+.toggleOFF, .toggleON{
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleOFF svg, .toggleON svg, .toggleOFF path, .toggleON path{
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.toggleON svg, .toggleON path{
+  color: var(--clr1);
+  cursor: pointer;
+}
+
+.mainImg{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainImg h1{
+  font-size: 14px;
+  font-weight: 600 !important;
+}
+
+.mainTabPane{
+  background-color: var(--bg2) !important;
+  border: none !important;
+}
+
+.tabContent{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg2);
+}
+
+.tabContent > div{
+  margin: 15px 10px 10px 10px;
+  width: 118px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tabContent img{
+  width: 80px;
+  height: 80px;
+  border-radius: 2%;
+  cursor: pointer;
+}
+
+.tabContent h1{
+  margin-top: 4px;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.faImage{
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.tabContent svg, .tabContent path{
+  font-size: 60px;
+  color: var(--clrGR00);
+  cursor: pointer;
+}
+
+.editTitle{
+  margin-top: 35px !important;
+}
+
+.editTitle svg, .editTitle path{
+  font-size: 20px;
+  color: var(--clrBL0000);
+  cursor: pointer;
+}
+
+.editTitle div:hover svg, .editTitle div:hover path{
+  color: var(--clrBL1);
+}
+
+.editTitle div:active svg, .editTitle div:active path{
+  color: var(--clrBL2);
+}
+
+.caracteres{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.caracteres h2{
+  font-size: 14px;
+  color: var(--clrBL1);
+}
+
+
+.formNota{
+  margin-top: 30px;
+}
+
+.charCount{
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+.imgFirma{
+  margin-top: 50px;
+}
+
+.imgFirma, .imgFirma > div{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.imgFirma svg, .imgFirma path{
+  margin-right: 10px;
+} 
+
+.linea{
+  margin-top: 10px;
+  width: 250px;
+  height: 2px;
+  background-color: gray;
+}
+
+.imgFirma h2{
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600 !important;
+}
+
+.iconEdit{
+  margin-top: 50px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconEdit div{
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg2);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.iconEdit svg, .iconEdit path{
+  color: var(--clr2);
+}
+
+.iconEdit div:hover{
+  background-color: var(--bg3);
+}
+
+.iconEdit div:active{
+  background-color: var(--bg4);
+}
+
+.iconEdit svg, .iconEdit path{
+  font-size: 20px;
+  color: var(--clr0);
+  cursor: pointer;
+}
+
+.iconDel{
+  margin-top: 20px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.iconDel svg, .iconDel path{
+  font-size: 20px;
+  color: var(--clrGR000);
+  cursor: pointer;
+}
+
+.iconDel div svg:hover, .iconDel div:hover path{
+  color: var(--clrGR00);
+}
+
+.iconDel div svg:active, .iconDel div:active path{
+  color: var(--clrGR0);
+}
+
+.iconClose svg, .iconClose path{
+  padding: 8px;
+  font-size: 34px;
+  color: var(--clrGR00);
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.iconCheck{
+  margin-bottom: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.iconCheck:hover{
+  background-color: var(--bg2);
+}
+
+.iconCheck:active{
+  background-color: var(--bg3);
+}
+
+.iconCheck svg, .iconCheck path{
+  font-size: 22px;
+  color: var(--clr1);
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px) {
+
+  .datos_1 div, .datos_2 div{
+    margin: 15px 0; 
+  }
+
+  .toggleNota{
+    margin-top: 50px;
+    max-width: 450px;
+  }
+
+}
+
+

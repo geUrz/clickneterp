@@ -65,3 +65,11 @@
 .ui.button.primary:active, .ui.button.primary:focus{
   background-color: var(--clr2) !important;
 }
+
+@media screen and (min-width:768px) {
+
+  .ui.button.primary, .ui.button.secondary{
+    margin-top: 50px !important;
+  }
+
+}

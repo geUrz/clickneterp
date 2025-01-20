@@ -1,85 +1,112 @@
-import { FaEdit } from 'react-icons/fa'
-import { ToastSuccess } from '@/components/Layouts'
-import { IconClose } from '@/components/Layouts'
-import styles from './ClienteDetalles.module.css'
+import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
+import { IconClose, Confirm } from '@/components/Layouts'
 import { useState } from 'react'
-import { formatClientId } from '@/helpers'
 import { BasicModal } from '@/layouts'
-import { ClienteModForm } from '../ClienteModForm'
+import { ClienteEditForm } from '../ClienteEditForm'
+import { useAuth } from '@/contexts/AuthContext'
+import axios from 'axios'
+import styles from './ClienteDetalles.module.css'
 
 export function ClienteDetalles(props) {
 
-  const { reload, onReload, cliente, onOpenClose } = props
+  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessClienteMod, toastSuccessDel } = props
+  
+  const {user} = useAuth()
 
   const [showEdit, setShowEdit] = useState(false)
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(cliente)
 
-  const[toastSuccess, setToastSuccess] = useState(false)
+  const onOpenCloseEdit = () => setShowEdit((prevState) => !prevState)
 
-  const onToastSuccess = () => {
-    setToastSuccess(true)
-    setTimeout(() => {
-      setToastSuccess(false)
-      onOpenClose()
-    }, 3000)
-  }
+  const [showConfirmDel, setShowConfirmDel] = useState(false)
 
-  const onOpenCloseEdit = (cliente = null) => {
-    setClienteSeleccionado(cliente)
-    setShowEdit(!showEdit)
+  const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
+
+  const handleDeleteCliente = async () => {
+    if (cliente?.id) {
+      try {
+        await axios.delete(`/api/clientes/clientes?id=${cliente.id}`)
+        onReload()
+        toastSuccessDel()
+        onCloseDetalles()
+      } catch (error) {
+        console.error('Error al eliminar la cliente:', error)
+      }
+    } else {
+      console.error('Incidencia o ID no disponible')
+    }
   }
 
   return (
 
     <>
 
-      <IconClose onOpenClose={onOpenClose} />
+      <IconClose onOpenClose={onCloseDetalles} />
 
-      {toastSuccess && <ToastSuccess contain='Cliente actualizado exitosamente' onClose={() => setToastSuccess(false)} />}
-
+      <div className={styles.main}>
       <div className={styles.section}>
         <div className={styles.box1}>
           <div>
-            <h1>Código</h1>
-            <h2>{formatClientId(cliente.id)}</h2>
-          </div>
-          <div>
-            <h1>Cliente</h1>
-            <h2>{cliente.cliente}</h2>
-          </div>
-        </div>
-        <div className={styles.box2}>
-          <div>
-            <h1>Contacto</h1>
-            <h2>{cliente.contacto}</h2>
+            <h1>Nombre</h1>
+            <h2>{cliente.nombre}</h2>
           </div>
           <div>
             <h1>Cel</h1>
             <h2>{cliente.cel}</h2>
           </div>
         </div>
-        <div className={styles.box3}>
+        <div className={styles.box2}>
           <div>
-            <h1>Dirección</h1>
-            <h2>{cliente.direccion}</h2>
+            <h1>Codigo</h1>
+            <h2>{cliente.folio}</h2>
           </div>
           <div>
-            <h1>Email</h1>
+            <h1>Correo</h1>
             <h2>{cliente.email}</h2>
           </div>
         </div>
-
-        <div className={styles.iconEdit}>
-          <div onClick={() => onOpenCloseEdit(cliente)}>
-            <FaEdit />
-          </div>
-        </div>
-
       </div>
 
-      <BasicModal title='modificar cliente' show={showEdit} onClose={() => onOpenCloseEdit(null)}>
-        <ClienteModForm reload={reload} onReload={onReload} clienteId={clienteSeleccionado} onOpenCloseEdit={() => onOpenCloseEdit(null)} onToastSuccess={onToastSuccess} />
+      {user.nivel === 'Admin' || user.nivel === 'Usuario' ? (
+          <>
+
+            <div className={styles.iconEdit}>
+              <FaEdit onClick={onOpenCloseEdit} />
+            </div>
+
+            {user.nivel === 'admin' ? (
+              <div className={styles.iconDel}>
+                <FaTrash onClick={onOpenCloseConfirmDel} />
+              </div>
+            ) : (
+              ''
+            )}
+
+          </>
+        ) : (
+          ''
+        )}
+      </div>
+
+      <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
+        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessClienteMod={onToastSuccessClienteMod} />
       </BasicModal>
+
+      <Confirm
+        open={showConfirmDel}
+        cancelButton={
+          <div className={styles.iconClose}>
+            <FaTimes />
+          </div>
+        }
+        confirmButton={
+          <div className={styles.iconCheck}>
+            <FaCheck />
+          </div>
+        }
+        onConfirm={handleDeleteCliente}
+        onCancel={onOpenCloseConfirmDel}
+        content='¿ Estas seguro de eliminar el cliente ?'
+      />
 
     </>
 

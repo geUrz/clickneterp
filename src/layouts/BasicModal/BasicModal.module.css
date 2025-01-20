@@ -20,3 +20,11 @@
   font-family: 'Bebas' !important;
 }
 
+@media screen and (min-width:768px) {
+
+  .modal{
+    max-width: 800px !important;
+  } 
+
+}
+

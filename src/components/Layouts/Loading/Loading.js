@@ -12,7 +12,7 @@ export function Loading(props) {
     [styles.loadingMiddle]: loading === 2, 
     [styles.loadingMini]: loading === 3,
     [styles.loadingFirma]: loading === 4    
-  });
+  })
 
   return (
     

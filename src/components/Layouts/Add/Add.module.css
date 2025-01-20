@@ -1,30 +1,50 @@
-.icon{
+.main{
   width: 100%;
   height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
-  bottom: 65px;
-  z-index: 900;
+  top: 100px;
 }
 
-.icon svg, .icon path{
-  padding: 16px;
-  font-size: 60px;
-  border-radius: 50%;
+.section{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.section > div{
+  padding: 10px;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: var(--clr0);
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.icon div{
-  cursor: pointer;
+.section div:hover{
+  background-color: var(--clr0);
 }
 
-.icon div:hover svg, .icon div:hover path{
+.section div:active{
   background-color: var(--clr1);
 }
 
-.icon div:active svg, .icon div:active path{
-  background-color: var(--clr2);
+.section svg, .section path{
+  font-size: 20px;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 1024px){
+
+  .section{
+    max-width: 665px;
+  }
+
 }

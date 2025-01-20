@@ -36,7 +36,7 @@
   left: 0;
   background-color: rgba(10, 10, 10, .95);
   transition: all .2s;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 .menuTop{
@@ -92,8 +92,12 @@
 }
 
 .menuList svg, .menuList path, .menuList h1{
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
+}
+
+.menuList h1{
+  font-size: 14px;
 }
 
 .menuList h1{

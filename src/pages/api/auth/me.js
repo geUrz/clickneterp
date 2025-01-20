@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
-import connection from '@/libs/db'; // Asegúrate de que la configuración de la base de datos está correctamente importada
-import { parse } from 'cookie';
+import jwt from 'jsonwebtoken'
+import {connection} from '@/libs/db'
+import { parse } from 'cookie'
 
 export default async function meHandler(req, res) {
   try {
@@ -21,7 +21,7 @@ export default async function meHandler(req, res) {
 
     const user = rows[0];
 
-    return res.json({ user: { id: user.id, usuario: user.usuario, email: user.email } });
+    return res.json({ user: { id: user.id, nombre: user.nombre, usuario: user.usuario, cel: user.cel, email: user.email, nivel: user.nivel, isactive: user.isactive } });
   } catch (error) {
     console.error('Error al obtener el usuario:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });

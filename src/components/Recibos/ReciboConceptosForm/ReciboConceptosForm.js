@@ -1,18 +1,17 @@
-import { IconClose } from '@/components/Layouts'
-import { Button, Form, FormField, FormGroup, Input, Label } from 'semantic-ui-react'
 import { useState } from 'react'
-import styles from './ReciboConceptosForm.module.css'
+import { IconClose } from '@/components/Layouts'
+import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
+import styles from './ReciboConceptosForm.module.css'
 
 export function ReciboConceptosForm(props) {
 
-  const { reciboId, onAddConcept, onOpenCloseForm, onToastSuccess, reload, onReload} = props
+  const { reload, onReload, reciboId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
 
   const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
+  const handleChange = (e, { name, value }) => {
     setNewConcept((prevState) => ({
       ...prevState,
       [name]: value,
@@ -52,7 +51,7 @@ export function ReciboConceptosForm(props) {
           recibo_id: reciboId,
           ...newConcept,
         })
-  
+
         if ((response.status === 200 || response.status === 201) && response.data) {
           const { id } = response.data
           if (id) {
@@ -61,8 +60,7 @@ export function ReciboConceptosForm(props) {
             setNewConcept({ tipo: '', concepto: '', precio: '', cantidad: '' })
 
             onReload()
-            onToastSuccess()
-            onOpenCloseForm()
+            onOpenCloseConcep()
 
           } else {
             console.error('Error al agregar el concepto: El ID no se encuentra en la respuesta del servidor', response);
@@ -78,27 +76,32 @@ export function ReciboConceptosForm(props) {
     }
   }
 
+  const opcionesSerprod = [
+    { key: 1, text: 'Servicio', value: 'Servicio' },
+    { key: 2, text: 'Producto', value: 'Producto' }
+  ]
+
   return (
 
     <>
 
-      <IconClose onOpenClose={onOpenCloseForm} />
+      <IconClose onOpenClose={onOpenCloseConcep} />
 
       <div className={styles.addConceptForm}>
         <Form>
           <FormGroup widths='equal'>
             <FormField error={!!errors.tipo}>
               <Label>Tipo</Label>
-              <select
+              <Dropdown
                 name="tipo"
+                placeholder='Selecciona una opción'
+                fluid
+                selection
+                options={opcionesSerprod}
                 value={newConcept.tipo}
                 onChange={handleChange}
-              >
-                <option value=''></option>
-                <option value='Servicio'>Servicio</option>
-                <option value='Producto'>Producto</option>
-              </select>
-              {errors.tipo && <span className={styles.error}>{errors.tipo}</span>}
+              />
+              {errors.tipo && <Message negative>{errors.tipo}</Message>}
             </FormField>
             <FormField error={!!errors.concepto}>
               <Label>Concepto</Label>
@@ -108,7 +111,7 @@ export function ReciboConceptosForm(props) {
                 value={newConcept.concepto}
                 onChange={handleChange}
               />
-              {errors.concepto && <span className={styles.error}>{errors.concepto}</span>}
+              {errors.concepto && <Message negative>{errors.concepto}</Message>}
             </FormField>
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
@@ -118,7 +121,7 @@ export function ReciboConceptosForm(props) {
                 value={newConcept.precio}
                 onChange={handleChange}
               />
-              {errors.precio && <span className={styles.error}>{errors.precio}</span>}
+              {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
             <FormField error={!!errors.cantidad}>
               <Label>Qty</Label>
@@ -128,13 +131,13 @@ export function ReciboConceptosForm(props) {
                 value={newConcept.cantidad}
                 onChange={handleChange}
               />
-              {errors.cantidad && <span className={styles.error}>{errors.cantidad}</span>}
+              {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
         </Form>
 
         <Button primary onClick={handleAddConcept}>
-          Agregar Concepto
+          Agregar concepto
         </Button>
 
       </div>

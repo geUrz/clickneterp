@@ -1,2 +1,6 @@
 export * from './ClientesLista'
 export * from './ClienteDetalles'
+export * from './ClienteForm'
+export * from './ClienteEditForm'
+export * from './ClientesListSearch'
+export * from './SearchClientes'

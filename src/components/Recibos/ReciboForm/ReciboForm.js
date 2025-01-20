@@ -1,27 +1,53 @@
-import { IconClose } from '@/components/Layouts'
-import { Button, Confirm, Form, FormField, FormGroup, Input, Label, TextArea } from 'semantic-ui-react'
+import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
+import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
+import { formatCurrency, genRECId } from '@/helpers'
 import { useEffect, useState } from 'react'
-import { RecibosRowHeadModal } from '../RecibosRowHead'
-import { FaCheck, FaTimes } from 'react-icons/fa'
-import { BiToggleLeft, BiToggleRight } from 'react-icons/bi'
 import axios from 'axios'
-import { formatCurrency } from '@/helpers'
 import { useAuth } from '@/contexts/AuthContext'
+import { FaCheck, FaPlus, FaTimes } from 'react-icons/fa'
+import { RowHeadModal } from '../RowHead'
+import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
+import { ClienteForm } from '@/components/Clientes'
 import styles from './ReciboForm.module.css'
+import { BasicModal } from '@/layouts'
 
 export function ReciboForm(props) {
 
-  const {reload, onReload, onOpenClose, onToastSuccess} = props
+  const { reload, onReload, onOpenCloseForm, onToastSuccess } = props
 
-  const {user} = useAuth()
- 
+  const { user } = useAuth()
+
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const [cliente, setCliente] = useState('')
+  const [toggle, setToggle] = useState(false)
+
+  const onToggle = () => setToggle((prevState) => !prevState)
+
+  const [show, setShow] = useState(false)
+
+  const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
+
+  const [toastSuccessCliente, setToastSuccessCliente] = useState(false)
+
+  const onToastSuccessCliente = () => {
+    setToastSuccessCliente(true)
+    setTimeout(() => {
+      setToastSuccessCliente(false)
+    }, 3000)
+  }
+
   const [clientes, setClientes] = useState([])
-  const [descripcion, setDescripcion] = useState('')
+  const [cliente_id, setCliente] = useState('')
+  const [cotizacion, setCotizacion] = useState('')
+  const [cotizaciones, setCotizaciones] = useState([])
+  const [recibo, setRecibo] = useState('')
   const [conceptos, setConceptos] = useState([])
-  const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', cantidad: '', precio: '' })
+  const [nuevoConcepto, setNuevoConcepto] = useState({
+    tipo: '',
+    concepto: '',
+    precio: '',
+    cantidad: ''
+  })
   const [toggleIVA, setToggleIVA] = useState(false)
 
   const onShowConfirm = (index) => {
@@ -34,35 +60,23 @@ export function ReciboForm(props) {
     setShowConfirm(false)
   }
 
-  useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const response = await axios.get('/api/clientes')
-        setClientes(response.data)
-      } catch (error) {
-          console.error('Error al obtener clientes:', error)
-      }
-    }
-
-    fetchClientes()
-  }, [])
-
   const [errors, setErrors] = useState({})
 
-  const validarFormCliente = () => {
+  const validarForm = () => {
     const newErrors = {}
 
-    if (!cliente) {
-      newErrors.cliente = 'El campo es requerido'
+    if (!cliente_id) {
+      newErrors.cliente_id = 'El campo es requerido'
     }
 
-    if (!descripcion) {
-      newErrors.descripcion = 'El campo es requerido'
+    if (!recibo) {
+      newErrors.recibo = 'El campo es requerido'
     }
 
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
+
   }
 
   const validarFormConceptos = () => {
@@ -76,42 +90,71 @@ export function ReciboForm(props) {
       newErrors.concepto = 'El campo es requerido'
     }
 
-    if (!nuevoConcepto.cantidad) {
-      newErrors.cantidad = 'El campo es requerido'
-    } else if (nuevoConcepto.cantidad <= 0) {
-      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
-    }
-
     if (!nuevoConcepto.precio) {
       newErrors.precio = 'El campo es requerido'
     } else if (nuevoConcepto.precio <= 0) {
       newErrors.precio = 'El precio debe ser mayor a 0'
     }
 
+    if (!nuevoConcepto.cantidad) {
+      newErrors.cantidad = 'El campo es requerido'
+    } else if (nuevoConcepto.cantidad <= 0) {
+      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
+    }
+
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
+
   }
+
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const res = await axios.get('/api/clientes/clientes')
+        setClientes(res.data)
+      } catch (error) {
+        console.error('Error al obtener los clientes:', error)
+      }
+    }
+
+    fetchClientes()
+  }, [reload])
 
   const crearRecibo = async (e) => {
     e.preventDefault()
 
-    if (!validarFormCliente()) {
+    if (!validarForm()) {
       return
     }
 
+    const folio = genRECId(4)
+
+    const folioRef = cotizaciones.find(cot => cot.id === cotizacion)?.folio || null
+
     try {
-      const response = await axios.post('/api/recibos/recibos', { cliente_id: cliente, descripcion, createdId: user.id });
-      const reciboId = response.data.id
+      const res = await axios.post('/api/recibos/recibos', {
+        usuario_id: user.id,
+        folio,
+        cliente_id,
+        recibo,
+        folioref: folioRef
+      })
+      const reciboId = res.data.id
       await Promise.all(conceptos.map(concepto =>
-        axios.post('/api/recibos/conceptos', { recibo_id: reciboId, ...concepto })
+        axios.post('/api/recibos/conceptos', {
+          recibo_id: reciboId, ...concepto
+        })
       ))
-      onToastSuccess()
-      setCliente('');
-      setDescripcion('')
+
+      setRecibo('')
+      setCliente('')
       setConceptos([])
-      onOpenClose()
+      setCotizacion(null)
+
       onReload()
+      onOpenCloseForm()
+      onToastSuccess()
     } catch (error) {
       console.error('Error al crear el recibo:', error)
 
@@ -122,20 +165,62 @@ export function ReciboForm(props) {
     if (!validarFormConceptos()) {
       return
     }
-    setConceptos([...conceptos, nuevoConcepto]);
-    setNuevoConcepto({ tipo: '', concepto: '', cantidad: '', precio: '' })
+    setConceptos([...conceptos, nuevoConcepto])
+    setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '' })
   }
 
   const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
 
   const eliminarConcepto = () => {
-    const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar);
-    setConceptos(nuevosConceptos);
-    onHideConfirm();
+    const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar)
+    setConceptos(nuevosConceptos)
+    onHideConfirm()
   }
 
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
+      try {
+        const res = await axios.get('/api/cotizaciones/cotizaciones')
+        setCotizaciones(res.data)
+
+      } catch (error) {
+        console.error('Error al obtener las cotizaciones:', error)
+      }
+    };
+    fetchCotizaciones()
+  }, [])
+
+  // Consultar los conceptos de la cotización seleccionada
+  useEffect(() => {
+    if (cotizacion) {
+      const fetchConceptos = async () => {
+        try {
+          const response = await axios.get(`/api/cotizaciones/conceptos?cotizacion_id=${cotizacion}`);
+          setConceptos(response.data);
+          // Aquí puedes mapear los conceptos y rellenar los campos, si es necesario
+
+          setNuevoConcepto({
+            tipo: '',
+            concepto: '',
+            precio: '',
+            cantidad: ''
+          })
+
+          const cotizacionResponse = await axios.get(`/api/cotizaciones/cotizaciones?id=${cotizacion}`);
+          setRecibo(cotizacionResponse.data?.cotizacion || '')
+
+
+
+        } catch (error) {
+          console.error('Error al obtener los conceptos:', error);
+        }
+      };
+      fetchConceptos();
+    }
+  }, [cotizacion])
+
   const calcularTotales = () => {
-    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0);
+    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
     const iva = subtotal * 0.16;
     const total = subtotal + iva;
     return { subtotal, iva, total }
@@ -144,49 +229,91 @@ export function ReciboForm(props) {
   const { subtotal, iva, total } = calcularTotales()
 
   useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA');
+    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
     if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA));
+      setToggleIVA(JSON.parse(savedToggleIVA))
     }
-  }, []);
-  
+  }, [])
+
   useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA));
-  }, [toggleIVA]);
+    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
+  }, [toggleIVA])
 
   const onIVA = () => {
     setToggleIVA(prevState => (!prevState))
-  } 
+  }
+
+  const opcionesSerprod = [
+    { key: 1, text: 'Servicio', value: 'Servicio' },
+    { key: 2, text: 'Producto', value: 'Producto' }
+  ]
 
   return (
 
     <>
 
-      <IconClose onOpenClose={onOpenClose} />
+      <IconClose onOpenClose={onOpenCloseForm} />
+
+      {toastSuccessCliente && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessCliente(false)} />}
 
       <div className={styles.main}>
         <Form>
           <FormGroup widths='equal'>
-            <FormField error={!!errors.cliente}>
-              <Label>Cliente</Label>
-              <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
-                <option value=""></option>
-                {clientes.map((cliente) => (
-                  <option key={cliente.id} value={cliente.id}>
-                    {cliente.cliente}
-                  </option>
-                ))}
-              </select>
-              {errors.cliente && <span className={styles.error}>{errors.cliente}</span>}
+            <FormField>
+
+              <div className={styles.toggleCot}>
+                {toggle ?
+                  <div className={styles.toggleOn} onClick={onToggle}>
+                    <Label>Cotización</Label>
+                    <BiSolidToggleRight />
+                  </div> :
+                  <div className={styles.toggleOff} onClick={onToggle}>
+                    <Label>Cotización</Label>
+                    <BiSolidToggleLeft />
+                  </div>
+                }
+              </div>
+
+              {toggle ?
+                <Dropdown
+                  placeholder='Selecciona un folio'
+                  fluid
+                  selection
+                  options={cotizaciones.map(cot => ({ key: cot.id, text: cot.folio, value: cot.id }))}
+                  value={cotizacion}
+                  onChange={(e, { value }) => setCotizacion(value)}
+                /> : null
+              }
+
             </FormField>
-            <FormField error={!!errors.descripcion}>
-              <Label>Descripción</Label>
-              <TextArea
+            <FormField error={!!errors.recibo}>
+              <Label>Recibo</Label>
+              <Input
                 type="text"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
+                value={recibo || ''}
+                onChange={(e) => setRecibo(e.target.value)}
               />
-              {errors.descripcion && <span className={styles.error}>{errors.descripcion}</span>}
+              {errors.recibo && <Message negative>{errors.recibo}</Message>}
+            </FormField>
+            <FormField error={!!errors.cliente_id}>
+              <Label>Cliente</Label>
+              <Dropdown
+                placeholder='Selecciona un cliente'
+                fluid
+                selection
+                options={clientes.map(cliente => ({
+                  key: cliente.id,
+                  text: cliente.nombre,
+                  value: cliente.id
+                }))}
+                value={cliente_id}
+                onChange={(e, { value }) => setCliente(value)}
+              />
+              <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
+                <h1>Crear cliente</h1>
+                <FaPlus />
+              </div>
+              {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
             </FormField>
           </FormGroup>
         </Form>
@@ -195,15 +322,15 @@ export function ReciboForm(props) {
           <FormGroup widths='equal'>
             <FormField error={!!errors.tipo}>
               <Label>Tipo</Label>
-              <select
+              <Dropdown
+                placeholder='Selecciona una opción'
+                fluid
+                selection
+                options={opcionesSerprod}
                 value={nuevoConcepto.tipo}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, tipo: e.target.value })}
-              >
-                <option value=''></option>
-                <option value='Servicio'>Servicio</option>
-                <option value='Producto'>Producto</option>
-              </select>
-              {errors.tipo && <span className={styles.error}>{errors.tipo}</span>}
+                onChange={(e, { value }) => setNuevoConcepto({ ...nuevoConcepto, tipo: value })}
+              />
+              {errors.tipo && <Message negative>{errors.tipo}</Message>}
             </FormField>
             <FormField error={!!errors.concepto}>
               <Label>Concepto</Label>
@@ -212,7 +339,7 @@ export function ReciboForm(props) {
                 value={nuevoConcepto.concepto}
                 onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, concepto: e.target.value })}
               />
-              {errors.concepto && <span className={styles.error}>{errors.concepto}</span>}
+              {errors.concepto && <Message negative>{errors.concepto}</Message>}
             </FormField>
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
@@ -221,7 +348,7 @@ export function ReciboForm(props) {
                 value={nuevoConcepto.precio}
                 onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, precio: e.target.value === '' ? '' : parseFloat(e.target.value) })}
               />
-              {errors.precio && <span className={styles.error}>{errors.precio}</span>}
+              {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
             <FormField error={!!errors.cantidad}>
               <Label>Qty</Label>
@@ -230,7 +357,7 @@ export function ReciboForm(props) {
                 value={nuevoConcepto.cantidad}
                 onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, cantidad: e.target.value === '' ? '' : parseInt(e.target.value) })}
               />
-              {errors.cantidad && <span className={styles.error}>{errors.cantidad}</span>}
+              {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
           <Button secondary onClick={añadirConcepto}>Añadir Concepto</Button>
@@ -238,10 +365,10 @@ export function ReciboForm(props) {
 
         <div className={styles.section}>
 
-          <RecibosRowHeadModal rowMain />
+          <RowHeadModal rowMain />
 
           {conceptos.map((concepto, index) => (
-            <div key={index} className={styles.rowMapConcept} onClick={() => onShowConfirm(index)}>
+            <div key={index} className={styles.rowMap} onClick={() => onShowConfirm(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
               <h1>${formatCurrency(concepto.precio * 1)}</h1>
@@ -257,14 +384,14 @@ export function ReciboForm(props) {
               {!toggleIVA ? (
 
                 <div className={styles.toggleOFF} onClick={onIVA}>
-                  <BiToggleLeft />
+                  <BiSolidToggleLeft />
                   <h1>IVA:</h1>
                 </div>
 
               ) : (
 
                 <div className={styles.toggleON} onClick={onIVA}>
-                  <BiToggleRight />
+                  <BiSolidToggleRight />
                   <h1>IVA:</h1>
                 </div>
 
@@ -305,6 +432,10 @@ export function ReciboForm(props) {
         <Button primary onClick={crearRecibo}>Crear</Button>
 
       </div>
+
+      <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
+        <ClienteForm reload={reload} onReload={onReload} onOpenClose={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
+      </BasicModal>
 
       <Confirm
         open={showConfirm}

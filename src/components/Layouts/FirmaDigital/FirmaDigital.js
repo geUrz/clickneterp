@@ -1,22 +1,22 @@
 import { useRef, useEffect, useState } from 'react'
 import SignaturePad from 'react-signature-canvas'
-import { Button } from 'semantic-ui-react'
-import axios from 'axios'
-import { IconClose } from '../IconClose'
 import styles from './FirmaDigital.module.css'
+import { Button } from 'semantic-ui-react'
+import { IconClose } from '../IconClose'
+import axios from 'axios'
 
 export function FirmaDigital(props) {
-  const { reciboId, reload, onReload, fetchFirma, onToastSuccessFirma, onOpenCloseFirma } = props
+  const { reload, onReload, endPoint, tipoFirma, itemId, onOpenClose } = props
 
   const [trimmedDataURL, setTrimmedDataURL] = useState(null)
   const sigPad = useRef(null)
 
   useEffect(() => {
-    const canvas = sigPad.current?.getCanvas();
+    const canvas = sigPad.current?.getCanvas()
     if (canvas) {
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })
     }
-  }, []);
+  }, [])
 
   const clear = () => {
     sigPad.current.clear()
@@ -26,30 +26,34 @@ export function FirmaDigital(props) {
     const signature = sigPad.current.getTrimmedCanvas().toDataURL('image/png')
     setTrimmedDataURL(signature)
     await onSave(signature)
-  };
+  }
 
   const onSave = async (signature) => {
     try {
-      const response = await axios.put(`/api/recibos/recibos?id=${reciboId}`, {
-        firma: signature
-      })
-
-      onToastSuccessFirma()
-      fetchFirma()
-      onReload()
-      onOpenCloseFirma()
-
+      // Determinar el endpoint según el tipo de firma
+      const endpoint = tipoFirma === 'firmatec' 
+        ? `/api/${endPoint}/createFirmaTec` 
+        : `/api/${endPoint}/createFirmaCli`;
+  
+      const response = await axios.put(endpoint, {
+        id: `${itemId}`,
+        firmaValue: signature
+      });
+  
       if (response.status === 200) {
-        console.log('Firma guardada exitosamente')
+        console.log('Firma guardada exitosamente');
+        onReload();  // Llamar la función para recargar el estado en el componente principal
+        onOpenClose();  // Cerrar el modal de firma
       }
     } catch (error) {
-      console.error('Error al guardar la firma:', error)
+      console.error('Error al guardar la firma:', error);
     }
   }
+  
 
   return (
     <>
-      <IconClose onOpenClose={onOpenCloseFirma} />
+      <IconClose onOpenClose={onOpenClose} />
       <div className={styles.signatureContainer}>
         <SignaturePad
           ref={sigPad}
@@ -63,5 +67,5 @@ export function FirmaDigital(props) {
         </div>
       </div>
     </>
-  );
+  )
 }

@@ -1,8 +1,9 @@
+import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { FaClipboard, FaFileAlt, FaFileContract, FaFileInvoice, FaFileInvoiceDollar, FaPaperclip, FaUser, FaUsers } from 'react-icons/fa'
-import styles from './panel.module.css'
 import { BasicLayout } from '@/layouts'
-import { ProtectedRoute, Title } from '@/components/Layouts'
+import { Title } from '@/components/Layouts'
 import Link from 'next/link'
+import styles from './panel.module.css'
 
 export default function Panel() {
   return (

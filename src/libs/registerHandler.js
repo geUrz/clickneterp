@@ -2,7 +2,7 @@ import connection from '@/libs/db'; // Asegúrate de importar la configuración 
 import bcrypt from 'bcrypt';
 
 export default async function registerHandler(req, res) {
-  const { usuario, email, cel, nivel, password } = req.body;
+  const { nombre, usuario, cel, email, nivel, password } = req.body;
 
   try {
     // Verificar si el usuario o el correo ya están registrados
@@ -25,8 +25,8 @@ export default async function registerHandler(req, res) {
 
     // Guardar el nuevo usuario en la base de datos
     const [result] = await connection.query(
-      'INSERT INTO usuarios (usuario, email, cel, nivel, password) VALUES (?, ?, ?, ?, ?)',
-      [usuario, email, cel, nivel, hashedPassword]
+      'INSERT INTO usuarios (usuario, email, cel, nivel, password) VALUES (?, ?, ?, ?, ?, ?)',
+      [nombre, usuario, cel, email, nivel, hashedPassword]
     );
 
     // Devolver una respuesta exitosa

@@ -40,6 +40,7 @@
 }
 
 .box1_1{
+  padding-right: 10px;
   width: 50%;
   display: flex;
   align-items: flex-start;

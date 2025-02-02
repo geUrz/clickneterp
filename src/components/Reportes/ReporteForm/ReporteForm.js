@@ -150,9 +150,9 @@ export function ReporteForm(props) {
                   value={cliente_id}
                   onChange={(e, { value }) => setCliente(value)}
                 />
-                <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
+                <div className={styles.addCliente}>
                   <h1>Crear cliente</h1>
-                  <FaPlus />
+                  <FaPlus onClick={onOpenCloseClienteForm} />
                 </div>
                 {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
               </FormField>
@@ -181,7 +181,7 @@ export function ReporteForm(props) {
         </div>
 
         <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
-          <ClienteForm reload={reload} onReload={onReload} onOpenClose={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
+          <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
         </BasicModal>
 
       </div>

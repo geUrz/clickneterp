@@ -25,6 +25,10 @@
   justify-content: center; 
 }
 
+.datos_1{
+  padding-right: 10px;
+}
+
 .datos_2 div{
   align-items: flex-end !important;  
 }
@@ -37,6 +41,7 @@
 
 .datos_1 h2, .datos_2 h2{
   font-size: 14px;
+  white-space: pre-line;
 }
 
 .datos_2 h2{
@@ -132,7 +137,7 @@
 }
 
 .sectionTotal_1{
-  margin-right: 42px;
+  width: 80%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -140,6 +145,7 @@
 }
 
 .sectionTotal_2{
+  width: 40%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;

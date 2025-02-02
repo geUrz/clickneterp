@@ -1,7 +1,7 @@
 import {connection} from "@/libs/db"
 
 export default async function handler(req, res) {
-    const { id } = req.query;
+    const { id, search } = req.query;
 
     if (req.method === 'GET') {
         if (id) {
@@ -17,15 +17,56 @@ export default async function handler(req, res) {
             } catch (error) {
                 res.status(500).json({ error: error.message })
             }
-        } else {
+
+            return
+        }
+
+            if (search) {
+                const searchQuery = `%${search.toLowerCase()}%`;
+                try {
+                    const [rows] = await connection.query(`
+                        SELECT
+                            id, 
+                            folio, 
+                            nombre,
+                            contacto,
+                            cel,
+                            direccion,
+                            email,
+                            createdAt
+                        FROM clientes
+                        WHERE 
+                            LOWER(folio) LIKE ? 
+                        OR 
+                            LOWER(nombre) LIKE ?
+                        OR 
+                            LOWER(contacto) LIKE ?
+                        OR 
+                            LOWER(cel) LIKE ?
+                        OR 
+                            LOWER(direccion) LIKE ?
+                        OR 
+                            LOWER(email) LIKE ?  
+                        OR 
+                            LOWER(createdAt) LIKE ?
+                        ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
+    
+                    res.status(200).json(rows); // Devolver los recibos encontrados por búsqueda
+    
+                } catch (error) {
+                    res.status(500).json({ error: 'Error al realizar la búsqueda' });
+                }
+                return;
+            }
+
             // Obtener todos los clientes
             try {
-                const [rows] = await connection.query('SELECT id, folio, nombre, contacto, cel, direccion, email FROM clientes');
+                const [rows] = await connection.query('SELECT id, folio, nombre, contacto, cel, direccion, email FROM clientes ORDER BY updatedAt DESC');
                 res.status(200).json(rows)
             } catch (error) {
                 res.status(500).json({ error: error.message })
             }
-        }
+        
     } else if (req.method === 'POST') {
         try {
             const { folio, nombre, contacto, cel, direccion, email } = req.body

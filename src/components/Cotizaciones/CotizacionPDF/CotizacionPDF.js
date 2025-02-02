@@ -159,7 +159,7 @@ export function CotizacionPDF(props) {
     doc.setTextColor(0, 0, 0);
     doc.text('Nota:', marginRight, top - 1)
 
-    doc.setFontSize(`${font2}`)
+    doc.setFontSize(`${font3}`)
     doc.setTextColor(80, 80, 80)
     const content = cotizacion.nota === undefined || cotizacion.nota === null ? (
       ''
@@ -203,7 +203,7 @@ export function CotizacionPDF(props) {
     })
 
 
-    doc.setFontSize(`${font2}`)
+    doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 50, 260)
     doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)

@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { map, size } from 'lodash'
-import { FaUsers } from 'react-icons/fa'
+import { FaUser, FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteDetalles } from '../ClienteDetalles'
 import styles from './ClientesLista.module.css'
+import { getValueOrDefault } from '@/helpers'
 
 export function ClientesLista(props) {
 
-  const {reload, onReload, clientes, toastSuccessMod, toastSuccessDel} = props
+  const { reload, onReload, clientes, onToastSuccessMod, onToastSuccessDel } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null)
@@ -28,35 +28,37 @@ export function ClientesLista(props) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false)
-    }, 800) 
+    }, 800)
 
     return () => clearTimeout(timer)
   }, [])
 
   return (
-    
+
     <>
-    
-    {showLoading ? (
+
+      {showLoading ? (
         <Loading size={45} loading={1} />
       ) : (
         size(clientes) === 0 ? (
           <ListEmpty />
         ) : (
-          <div className={styles.mainRow}>
+          <div className={styles.main}>
             {map(clientes, (cliente) => (
-              <div key={cliente.id} className={styles.mainRowMap} onClick={() => onOpenDetalles(cliente)}>
-                <div className={styles.mainRowMap1}>
-                  <FaUsers />
-                </div>
-                <div className={styles.mainRowMap2}>
-                  <div>
-                    <h1>Nombre</h1>
-                    <h2>{cliente.nombre}</h2>
+              <div key={cliente.id} className={styles.section} onClick={() => onOpenDetalles(cliente)}>
+                <div>
+                  <div className={styles.column1}>
+                    <FaUsers />
                   </div>
-                  <div>
-                    <h1>Celular</h1>
-                    <h2>{cliente.cel}</h2>
+                  <div className={styles.column2}>
+                    <div >
+                      <h1>Cliente</h1>
+                      <h2>{getValueOrDefault(cliente.nombre)}</h2>
+                    </div>
+                    <div >
+                      <h1>Contacto</h1>
+                      <h2>{getValueOrDefault(cliente.contacto)}</h2>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -66,7 +68,7 @@ export function ClientesLista(props) {
       )}
 
       <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
-        <ClienteDetalles reload={reload} onReload={onReload} cliente={clienteSeleccionado} onCloseDetalles={onCloseDetalles} toastSuccessMod={toastSuccessMod} toastSuccessDel={toastSuccessDel} />
+        <ClienteDetalles reload={reload} onReload={onReload} cliente={clienteSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

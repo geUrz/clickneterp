@@ -32,8 +32,8 @@ export function FirmaDigital(props) {
     try {
       // Determinar el endpoint según el tipo de firma
       const endpoint = tipoFirma === 'firmatec' 
-        ? `/api/${endPoint}/createFirmaTec` 
-        : `/api/${endPoint}/createFirmaCli`;
+        ? `/api/${endPoint}/createFirmatec` 
+        : `/api/${endPoint}/createFirmacli`;
   
       const response = await axios.put(endpoint, {
         id: `${itemId}`,

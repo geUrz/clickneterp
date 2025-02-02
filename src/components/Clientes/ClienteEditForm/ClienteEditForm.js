@@ -6,7 +6,7 @@ import styles from './ClienteEditForm.module.css'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccessClienteMod } = props
+  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccessMod } = props
 
   const [clientes, setClientes] = useState([])
 
@@ -73,7 +73,7 @@ export function ClienteEditForm(props) {
       })
       onReload()
       onOpenCloseEdit()
-      onToastSuccessClienteMod()
+      onToastSuccessMod()
     } catch (error) {
       console.error('Error actualizando el cliente:', error)
     }
@@ -146,7 +146,7 @@ export function ClienteEditForm(props) {
             />
           </FormField>
         </FormGroup>
-        <Button secondary onClick={handleSubmit}>
+        <Button primary onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

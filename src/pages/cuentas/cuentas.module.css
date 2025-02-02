@@ -1,0 +1,117 @@
+.mainCount{
+  width: 100%;
+  height: auto;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconSearchMain{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconSearch{
+  width: 180px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+} 
+
+.iconSearch h1{
+  margin-right: 10px !important;
+  font-size: 16px;
+} 
+
+.iconSearch svg, .iconSearch path{
+  font-size: 24px;
+  cursor: pointer;
+} 
+
+.searchMain {
+  padding: 20px;
+  margin-top: 80px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--bg0);
+  z-index: 1000;
+}
+
+.section{
+  margin: 0 5px;
+  width: 160px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg1);
+  border-radius: 5%;
+  cursor: pointer;
+}
+
+.section:hover{
+  background-color: var(--bg2);
+}
+
+.icon{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .8;
+  cursor: pointer;
+}
+
+.icon1, .icon2{
+  cursor: pointer;
+}
+
+.icon1 svg, .icon1 path{
+  font-size: 25px;
+  color: var(--clr1);
+  cursor: pointer;
+}
+
+.icon2 svg, .icon2 path{
+  margin: 0 4px 10px -6px;
+  font-size: 16px;
+  color: var(--clr1);
+  cursor: pointer;
+}
+
+.icon h1{
+  font-size: 18px;
+  font-family: 'Bebas' !important;
+  cursor: pointer;
+}
+
+.count{
+  padding: 0 5px;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.count h1{
+  font-size: 28px;
+  font-family: 'Bebas' !important;
+  cursor: pointer;
+}
+

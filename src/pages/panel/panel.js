@@ -1,5 +1,5 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import { FaClipboard, FaFileAlt, FaFileContract, FaFileInvoice, FaFileInvoiceDollar, FaPaperclip, FaUser, FaUsers } from 'react-icons/fa'
+import { FaClipboard, FaFileAlt, FaFileContract, FaFileInvoice, FaFileInvoiceDollar, FaUser, FaUsers } from 'react-icons/fa'
 import { BasicLayout } from '@/layouts'
 import { Title } from '@/components/Layouts'
 import Link from 'next/link'
@@ -16,17 +16,13 @@ export default function Panel() {
 
         <div className={styles.main}>
           <div className={styles.section}>
-            <Link href='tareas' className={styles.boxContainer}>
-              <FaPaperclip />
-              <h1>Tareas</h1>
-            </Link>
             <Link href='recibos' className={styles.boxContainer}>
               <FaFileInvoice />
               <h1>Recibos</h1>
             </Link>
-            <Link href='servicios' className={styles.boxContainer}>
+            <Link href='ordenesdeservicio' className={styles.boxContainer}>
               <FaFileAlt />
-              <h1>Servicios</h1>
+              <h1>Órdenes de Servicio</h1>
             </Link>
             <Link href='cotizaciones' className={styles.boxContainer}>
               <FaFileContract />
@@ -36,9 +32,9 @@ export default function Panel() {
               <FaClipboard />
               <h1>Reportes</h1>
             </Link>
-            <Link href='contabilidad' className={styles.boxContainer}>
+            <Link href='cuentas' className={styles.boxContainer}>
               <FaFileInvoiceDollar />
-              <h1>Contabilidad</h1>
+              <h1>Cuentas</h1>
             </Link>
             <Link href='clientes' className={styles.boxContainer}>
               <FaUsers />

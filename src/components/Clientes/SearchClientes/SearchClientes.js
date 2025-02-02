@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from 'semantic-ui-react';
-import { ClientesListSearch, EventosListSearch } from '../ClientesListSearch';
+import { ClientesListSearch, RecibosListSearch } from '../ClientesListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
 import styles from './SearchClientes.module.css';
 
 export function SearchClientes(props) {
 
-  const {reload, onReload, onResults, onOpenCloseSearch, toastSuccessMod} = props
+  const {reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,8 +25,8 @@ export function SearchClientes(props) {
       setError('')
 
       try {
-        const response = await axios.get(`/api/clientes/clientes?search=${query}`)
-        setClientes(response.data)
+        const res = await axios.get(`/api/clientes/clientes?search=${query}`)
+        setClientes(res.data)
       } catch (err) {
         setError('No se encontraron clientes')
         setClientes([])
@@ -59,7 +59,7 @@ export function SearchClientes(props) {
         {error && <p>{error}</p>}
         {clientes.length > 0 && (
           <div className={styles.resultsContainer}>
-            <ClientesListSearch clientes={clientes} reload={reload} onReload={onReload} toastSuccessMod={toastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <ClientesListSearch clientes={clientes} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

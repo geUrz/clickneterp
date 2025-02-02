@@ -1,67 +1,76 @@
 import { map } from 'lodash'
+import { Loading } from '@/components/Layouts'
 import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
-import { useState } from 'react'
-import { Loading } from '@/components/Layouts'
-import { ClienteDetalles } from '../ClienteDetalles'
+import { useEffect, useState } from 'react'
+import { getValueOrDefault } from '@/helpers'
 import styles from './ClientesListSearch.module.css'
+import { ClienteDetalles } from '../ClienteDetalles'
 
 export function ClientesListSearch(props) {
 
-  const { reload, onReload, clientes, toastSuccessMod, toastSuccessDel } = props
+  const { reload, onReload, clientes, onToastSuccessMod, onToastSuccessDel } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [clienteSeleccionado, setClienteSeleccionada] = useState(null)
+  const [clientesSeleccionado, setClienteSeleccionado] = useState(null)
+  const [showLoading, setShowLoading] = useState(true)
 
   const onOpenDetalles = (cliente) => {
-    setClienteSeleccionada(cliente)
+    setClienteSeleccionado(cliente)
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setClienteSeleccionada(null)
+    setClienteSeleccionado(null)
     setShowDetalles(false)
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
 
     <>
 
-      {!clientes ?
+      {showLoading ?
         <Loading size={45} loading={1} /> :
         <div className={styles.main}>
           {map(clientes, (cliente) => (
-              <div key={cliente.id} className={styles.section} onClick={() => onOpenDetalles(cliente)}>
-                <div>
-                  <div className={styles.column1}>
-                    <FaUsers />
+            <div key={cliente.id} className={styles.section} onClick={() => onOpenDetalles(cliente)}>
+              <div>
+                <div className={styles.column1}>
+                  <FaUsers />
+                </div>
+                <div className={styles.column2}>
+                  <div >
+                    <h1>Cliente</h1>
+                    <h2>{getValueOrDefault(cliente.nombre)}</h2>
                   </div>
-                  <div className={styles.column2}>
-                    <div>
-                      <h1>Nombre</h1>
-                      <h2>{cliente.nombre}</h2>
-                    </div>
-                    <div>
-                      <h1>Cel</h1>
-                      <h2>{cliente.cel}</h2>
-                    </div>
+                  <div >
+                    <h1>Contacto</h1>
+                    <h2>{getValueOrDefault(cliente.contacto)}</h2>
                   </div>
                 </div>
               </div>
-            )
-          )}
+            </div>
+          ))}
         </div>
       }
 
-      <BasicModal title='detalles de la cliente' show={showDetalles} onClose={onCloseDetalles}>
-        {clienteSeleccionado && (
+      <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
+        {clientesSeleccionado && (
           <ClienteDetalles
             reload={reload}
             onReload={onReload}
-            cliente={clienteSeleccionado}
+            cliente={clientesSeleccionado}
             onCloseDetalles={onCloseDetalles}
-            toastSuccessMod={toastSuccessMod}
-            toastSuccessDel={toastSuccessDel}
+            onToastSuccessMod={onToastSuccessMod}
+            onToastSuccessDel={onToastSuccessDel}
           />
         )}
       </BasicModal>

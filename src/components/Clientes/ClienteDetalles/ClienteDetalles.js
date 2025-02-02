@@ -6,12 +6,13 @@ import { ClienteEditForm } from '../ClienteEditForm'
 import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import styles from './ClienteDetalles.module.css'
+import { getValueOrDefault } from '@/helpers'
 
 export function ClienteDetalles(props) {
 
-  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessClienteMod, toastSuccessDel } = props
-  
-  const {user} = useAuth()
+  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessMod, toastSuccessDel } = props
+
+  const { user } = useAuth()
 
   const [showEdit, setShowEdit] = useState(false)
 
@@ -42,40 +43,52 @@ export function ClienteDetalles(props) {
 
       <IconClose onOpenClose={onCloseDetalles} />
 
-      <div className={styles.main}>
       <div className={styles.section}>
         <div className={styles.box1}>
-          <div>
-            <h1>Nombre</h1>
-            <h2>{cliente.nombre}</h2>
+          <div className={styles.box1_1}>
+            <div>
+              <h1>Cliente</h1>
+              <h2>{getValueOrDefault(cliente.nombre)}</h2>
+            </div>
+            <div>
+              <h1>Contacto</h1>
+              <h2>{getValueOrDefault(cliente.contacto)}</h2>
+            </div>
+            <div>
+              <h1>Dirección</h1>
+              <h2>{getValueOrDefault(cliente.direccion)}</h2>
+            </div>
           </div>
-          <div>
-            <h1>Cel</h1>
-            <h2>{cliente.cel}</h2>
+          <div className={styles.box1_2}>
+            <div>
+              <h1>Folio</h1>
+              <h2>{getValueOrDefault(cliente.folio)}</h2>
+            </div>
+            <div>
+              <h1>Cel</h1>
+              <h2>{getValueOrDefault(cliente.cel)}</h2>
+            </div>
+            <div>
+              <h1>Email</h1>
+              <h2>{getValueOrDefault(cliente.email)}</h2>
+            </div>
           </div>
         </div>
-        <div className={styles.box2}>
-          <div>
-            <h1>Codigo</h1>
-            <h2>{cliente.folio}</h2>
-          </div>
-          <div>
-            <h1>Correo</h1>
-            <h2>{cliente.email}</h2>
-          </div>
-        </div>
-      </div>
 
-      {user.nivel === 'Admin' || user.nivel === 'Usuario' ? (
+        {user.nivel === 'Admin' || user.nivel === 'Usuario' ? (
           <>
 
             <div className={styles.iconEdit}>
-              <FaEdit onClick={onOpenCloseEdit} />
+              <div onClick={onOpenCloseEdit}>
+                <FaEdit />
+              </div>
             </div>
 
             {user.nivel === 'admin' ? (
               <div className={styles.iconDel}>
-                <FaTrash onClick={onOpenCloseConfirmDel} />
+                <div>
+                  <FaTrash onClick={onOpenCloseConfirmDel} />
+                </div>
               </div>
             ) : (
               ''
@@ -88,7 +101,7 @@ export function ClienteDetalles(props) {
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
-        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessClienteMod={onToastSuccessClienteMod} />
+        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <Confirm

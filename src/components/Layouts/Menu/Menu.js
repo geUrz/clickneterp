@@ -35,7 +35,7 @@ export function Menu() {
       </div>
 
       <div className={styles.mainMenuSide} style={{left : menu ? '0' : '-100%'}} onClick={onMenu}>
-        <div className={styles.menuTop} onClick={() => router.push('cuenta')}>
+        <div className={styles.menuTop} onClick={() => router.push('usuario')}>
           <FaUserCircle />
           <h1>{user.usuario}</h1>
         </div>
@@ -44,17 +44,13 @@ export function Menu() {
             <FaHome />
             <h1>Panel</h1>
           </Link>
-          <Link href='tareas'>
-            <FaPaperclip />
-            <h1>Tareas</h1>
-          </Link>
           <Link href='recibos'>
             <FaFileInvoice />
             <h1>Recibos</h1>
           </Link>
-          <Link href='servicios'>
+          <Link href='ordenesdeservicio'>
             <FaFileAlt />
-            <h1>Servicios</h1>
+            <h1>Órdenes de servicio</h1>
           </Link>
           <Link href='cotizaciones'>
             <FaFileContract />
@@ -64,9 +60,9 @@ export function Menu() {
             <FaClipboard />
             <h1>Reportes</h1>
           </Link>
-          <Link href='contabilidad'>
+          <Link href='cuentas'>
             <FaFileInvoiceDollar />
-            <h1>Contabilidad</h1>
+            <h1>Cuentas</h1>
           </Link>
           <Link href='clientes'>
             <FaUsers />

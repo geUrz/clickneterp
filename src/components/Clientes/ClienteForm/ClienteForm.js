@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 
 export function ClienteForm(props) {
 
-  const { reload, onReload, onToastSuccess, onOpenClose } = props
+  const { reload, onReload, onToastSuccess, onCloseForm } = props
 
   const [nombre, setNombre] = useState('')
   const [contacto, setContacto] = useState('')
@@ -64,7 +64,7 @@ export function ClienteForm(props) {
       setEmail('')
 
       onReload()
-      onOpenClose()
+      onCloseForm()
       onToastSuccess()
 
     } catch (error) {
@@ -77,7 +77,7 @@ export function ClienteForm(props) {
 
     <>
 
-      <IconClose onOpenClose={onOpenClose} />
+      <IconClose onOpenClose={onCloseForm} />
 
       <Form>
         <FormGroup widths='equal'>

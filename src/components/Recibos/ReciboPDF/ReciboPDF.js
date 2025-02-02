@@ -203,7 +203,7 @@ export function ReciboPDF(props) {
     })
 
 
-    doc.setFontSize(`${font2}`)
+    doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 50, 260)
     doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)

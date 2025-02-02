@@ -1,61 +1,74 @@
-.main{
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 .section{
   width: 100%;
   height: auto;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-.box1, .box2{
-  width: 100%;
-  height: auto;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.box1 div, .box2 div{
-  margin-bottom: 20px;
+.box1{
   width: 100%;
   height: auto;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 }
 
-.box2 div{
-  align-items: flex-end;
-}
-
-.box1 h1, .box2 h1{
+.box1 h1{
+  margin-top: 5px;
   font-size: 14px;
   font-weight: 600 !important;
-  color: black;
+  color: var(--clr1);
+  white-space: pre-line;
 }
 
-.box1 h2, .box2 h2{
-  font-size: 14px;
-  color: var(--clrGR000);
+.box1 h2{
+  margin-top: 3px;
+  font-size: 12.5px;
+  white-space: pre-line;
 }
 
-.box1 div:nth-child(2) h2, .box2 div:nth-child(1) h2, .box3 div:nth-child(1) h2{
-  text-transform: capitalize;
+
+.box1_1, .box1_2{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.box1_1 div, .box1_2 div{
+  margin: 5px 0;
+}
+
+.box1_1{
+  padding-right: 10px;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.box1_1 h1, .box1_1 h2{
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.box1_2{
+  width: 35%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.box1_2 h1, .box1_2 h2{
+  text-align: right;
+  word-break: break-all;
 }
 
 .iconEdit{
-  margin-top: 20px;
+  margin-top: 50px;
   width: 100%;
   height: auto;
   display: flex;
@@ -63,55 +76,32 @@
   justify-content: center;
 }
 
-.iconEdit{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 26px;
-  color: var(--clrM0);
-  cursor: pointer;
-}
-
-.iconEdit div svg:hover, .iconEdit div:hover path{
-  color: var(--clrM1);
-}
-
-.iconEdit div svg:active, .iconEdit div:active path{
-  color: var(--clrM2);
-}
-
-.iconCheck{
+.iconEdit div{
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--bg2);
+  border-radius: 50%;
   cursor: pointer;
 }
 
-.iconCheck:hover{
-  background-color: var(--clrGR2);
+.iconEdit svg, .iconEdit path{
+  color: var(--clr2);
 }
 
-.iconCheck:active{
-  background-color: var(--clrGR3);
+.iconEdit div:hover{
+  background-color: var(--bg3);
 }
 
-.iconClose{
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.iconEdit div:active{
+  background-color: var(--bg4);
 }
 
-.iconCheck svg, .iconCheck path{
-  font-size: 22px;
-  color: var(--clrM0);
+.iconEdit svg, .iconEdit path{
+  font-size: 20px;
+  color: var(--clr0);
   cursor: pointer;
 }
 
@@ -130,11 +120,11 @@
   cursor: pointer;
 }
 
-.iconDel svg:hover, .iconDel:hover path{
+.iconDel div svg:hover, .iconDel div:hover path{
   color: var(--clrGR00);
 }
 
-.iconDel svg:active, .iconDel:active path{
+.iconDel div svg:active, .iconDel div:active path{
   color: var(--clrGR0);
 }
 
@@ -149,14 +139,6 @@
   cursor: pointer;
 }
 
-.iconClose svg:hover,.iconClose path:hover{
-  background-color: var(--clrGR3);
-}
-
-.iconClose svg:active,.iconClose path:active{
-  background-color: var(--clrGR4);
-}
-
 .iconCheck{
   margin-bottom: 20px;
   width: 50px;
@@ -168,15 +150,30 @@
 }
 
 .iconCheck:hover{
-  background-color: var(--clrGR2);
+  background-color: var(--bg2);
 }
 
 .iconCheck:active{
-  background-color: var(--clrGR3);
+  background-color: var(--bg3);
 }
 
 .iconCheck svg, .iconCheck path{
   font-size: 22px;
-  color: var(--clrM0);
+  color: var(--clr1);
   cursor: pointer;
 }
+
+@media screen and (min-width: 768px) {
+
+  .datos_1 div, .datos_2 div{
+    margin: 15px 0; 
+  }
+
+  .toggleNota{
+    margin-top: 50px;
+    max-width: 450px;
+  }
+
+}
+
+

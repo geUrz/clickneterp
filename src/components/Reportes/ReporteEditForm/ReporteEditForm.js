@@ -159,7 +159,7 @@ export function ReporteEditForm(props) {
       </Form>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
-        <ClienteForm reload={reload} onReload={onReload} onOpenClose={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
+        <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
       </BasicModal>
 
     </>

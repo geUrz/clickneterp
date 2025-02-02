@@ -73,6 +73,8 @@ export default function Recibos() {
     <ProtectedRoute>
 
       <BasicLayout relative onReload={onReload}>
+  
+        <Add onOpenClose={onOpenCloseForm} />
 
         <Title title='Recibos' />
 
@@ -105,8 +107,6 @@ export default function Recibos() {
         )}
 
         <RecibosLista user={user} loading={loading} reload={reload} onReload={onReload} recibos={recibos} setRecibos={setRecibos} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
-
-        <Add onOpenClose={onOpenCloseForm} />
 
       </BasicLayout>
 

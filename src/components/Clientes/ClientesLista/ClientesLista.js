@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { map, size } from 'lodash'
-import { FaUser, FaUsers } from 'react-icons/fa'
+import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteDetalles } from '../ClienteDetalles'
 import styles from './ClientesLista.module.css'

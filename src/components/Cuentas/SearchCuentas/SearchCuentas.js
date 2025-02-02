@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from 'semantic-ui-react';
-import { RecibosListSearch } from '../CuentasListSearch';
+import { CuentasListSearch } from '../CuentasListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './SearchCuentas.module.css';
@@ -15,12 +15,12 @@ export function SearchCuentas(props) {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [recibos, setRecibos] = useState([])
+  const [cuentas, setCuentas] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
       if (query.trim() === '') {
-        setRecibos([])
+        setCuentas([])
         return
       }
 
@@ -28,12 +28,11 @@ export function SearchCuentas(props) {
       setError('')
 
       try {
-        const res = await axios.get(`/api/recibos/recibos?search=${query}`)
-        const filteredRecibos = res.data.filter(recibo => recibo.residencial_id === user.residencial_id)
-        setRecibos(filteredRecibos)
+        const res = await axios.get(`/api/cuentas/cuentas?search=${query}`)
+        setCuentas(res.data)
       } catch (err) {
-        setError('No se encontraron recibos')
-        setRecibos([])
+        setError('No se encontraron cuentas')
+        setCuentas([])
       } finally {
         setLoading(false)
       }
@@ -48,7 +47,7 @@ export function SearchCuentas(props) {
       <div className={styles.input}>
         <Input
           type="text"
-          placeholder="Buscar recibo..."
+          placeholder="Buscar cuenta..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className={styles.searchInput}
@@ -61,9 +60,9 @@ export function SearchCuentas(props) {
 
       <div className={styles.visitaLista}>
         {error && <p>{error}</p>}
-        {recibos.length > 0 && (
+        {cuentas.length > 0 && (
           <div className={styles.resultsContainer}>
-            <RecibosListSearch recibos={recibos} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <CuentasListSearch cuentas={cuentas} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

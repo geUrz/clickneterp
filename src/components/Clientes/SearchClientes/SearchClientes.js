@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from 'semantic-ui-react';
-import { ClientesListSearch, RecibosListSearch } from '../ClientesListSearch';
+import { ClientesListSearch } from '../ClientesListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
 import styles from './SearchClientes.module.css';
 

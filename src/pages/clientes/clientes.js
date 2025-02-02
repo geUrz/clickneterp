@@ -8,7 +8,6 @@ import { FaSearch } from 'react-icons/fa'
 import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
 import styles from './clientes.module.css'
 
-
 export default function Clientes() {
 
   const { user, loading } = useAuth()

@@ -1,26 +1,25 @@
 import { map } from 'lodash'
 import { Loading } from '@/components/Layouts'
-import { FaFileInvoice } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
-import { ReciboDetalles } from '../CuentaDetalles'
+import { CuentaDetalles } from '../CuentaDetalles'
 import axios from 'axios'
-import { formatDateIncDet } from '@/helpers'
 import styles from './CuentasListSearch.module.css'
+import { FaFileInvoiceDollar } from 'react-icons/fa'
 
 export function CuentasListSearch(props) {
 
-  const { reload, onReload, recibos, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, cuentas, onToastSuccessMod, onToastSuccessDel } = props
 
   const [show, setShow] = useState(false)
-  const [reciboSeleccionado, setReciboSeleccionado] = useState(null)
+  const [cuentasSeleccionado, setCuentaSeleccionado] = useState(null)
   const [showLoading, setShowLoading] = useState(true)
 
-  const onOpenClose = async (cotizacion) => {
+  const onOpenClose = async (cuenta) => {
     try {
-      const response = await axios.get(`/api/recibos/conceptos?recibo_id=${cotizacion.id}`)
-      cotizacion.conceptos = response.data
-      setReciboSeleccionado(cotizacion)
+      const response = await axios.get(`/api/cuentas/conceptos?cuenta_id=${cuenta.id}`)
+      cuenta.conceptos = response.data
+      setCuentaSeleccionado(cuenta)
       setShow((prevState) => !prevState)
     } catch (error) {
       console.error('Error al obtener los conceptos:', error)
@@ -47,20 +46,20 @@ export function CuentasListSearch(props) {
       {showLoading ? 
         <Loading size={45} loading={1} /> :
         <div className={styles.main}>
-            {map(recibos, (recibo) => (
-             <div key={recibo.id} className={styles.section} onClick={() => onOpenClose(recibo)}>
+            {map(cuentas, (cuenta) => (
+             <div key={cuenta.id} className={styles.section} onClick={() => onOpenClose(cuenta)}>
              <div>
                <div className={styles.column1}>
-                 <FaFileInvoice />
+                 <FaFileInvoiceDollar />
                </div>
                <div className={styles.column2}>
                  <div>
-                   <h1>Recibo</h1>
-                   <h2>{recibo.recibo}</h2>
+                   <h1>Cuenta</h1>
+                   <h2>{getValueOrDefault(cuenta.cuenta)}</h2>
                  </div>
                  <div>
-                   <h1>Fecha</h1>
-                   <h2>{formatDateIncDet(recibo.createdAt)}</h2>
+                   <h1>Tipo</h1>
+                   <h2>{getValueOrDefault(cuenta.tipo)}</h2>
                  </div>
                </div>
              </div>
@@ -70,12 +69,12 @@ export function CuentasListSearch(props) {
       }
 
       <BasicModal title='detalles de la cotización' show={show} onClose={onCloseDetalles}>
-        {reciboSeleccionado && (
-          <ReciboDetalles
+        {cuentasSeleccionado && (
+          <CuentaDetalles
             reload={reload}
             onReload={onReload}
-            recibo={reciboSeleccionado} 
-            reciboId={reciboSeleccionado}
+            cuenta={cuentasSeleccionado} 
+            cuentaId={cuentasSeleccionado}
             onOpenClose={onOpenClose}
             onToastSuccessMod={onToastSuccessMod}
             onToastSuccessDel={onToastSuccessDel}

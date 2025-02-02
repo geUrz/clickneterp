@@ -4,8 +4,8 @@ import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
 import { getValueOrDefault } from '@/helpers'
-import styles from './ClientesListSearch.module.css'
 import { ClienteDetalles } from '../ClienteDetalles'
+import styles from './ClientesListSearch.module.css'
 
 export function ClientesListSearch(props) {
 

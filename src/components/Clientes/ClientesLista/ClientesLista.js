@@ -4,8 +4,8 @@ import { map, size } from 'lodash'
 import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteDetalles } from '../ClienteDetalles'
-import styles from './ClientesLista.module.css'
 import { getValueOrDefault } from '@/helpers'
+import styles from './ClientesLista.module.css'
 
 export function ClientesLista(props) {
 

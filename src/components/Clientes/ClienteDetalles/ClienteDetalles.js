@@ -5,8 +5,8 @@ import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
 import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
-import styles from './ClienteDetalles.module.css'
 import { getValueOrDefault } from '@/helpers'
+import styles from './ClienteDetalles.module.css'
 
 export function ClienteDetalles(props) {
 

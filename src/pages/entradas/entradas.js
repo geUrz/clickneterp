@@ -1,5 +1,4 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import styles from './entradas.module.css'
 import { BasicLayout } from '@/layouts'
 import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
@@ -8,6 +7,7 @@ import { FaArrowDown, FaDollarSign } from 'react-icons/fa'
 import { formatCurrency } from '@/helpers'
 import axios from 'axios'
 import { CuentasLista } from '@/components/Cuentas'
+import styles from './entradas.module.css'
 
 export default function Entradas() {
 

@@ -6,10 +6,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import { FaArrowDown, FaArrowUp, FaDollarSign } from 'react-icons/fa'
 import { formatCurrency } from '@/helpers'
-import styles from './cuentas.module.css'
 import { useRouter } from 'next/router'
 import { CuentaForm, CuentasLista } from '@/components/Cuentas'
-import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
+import styles from './cuentas.module.css'
 
 export default function Cuentas() {
 

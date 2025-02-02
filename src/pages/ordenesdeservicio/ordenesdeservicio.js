@@ -1,5 +1,4 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import styles from './ordenesdeservicio.module.css'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
@@ -7,6 +6,7 @@ import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
 import { FaSearch } from 'react-icons/fa'
 import { OrdenesdeservicioForm, OrdenesdeservicioList, OrdenesdeservicioListSearch, SearchOrdenesdeservicio } from '@/components/Ordenesdeservicio'
+import styles from './ordenesdeservicio.module.css'
 
 export default function Ordenesdeservicio() {
 

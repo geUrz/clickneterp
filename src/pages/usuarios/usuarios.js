@@ -4,9 +4,9 @@ import { Add, Loading, Title, ToastSuccess } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
 import { SearchUsuarios, UsuarioForm, UsuariosLista, UsuariosListSearch } from '@/components/Usuarios'
 import { useEffect, useState } from 'react'
-import styles from './usuarios.module.css'
 import axios from 'axios'
 import { FaSearch } from 'react-icons/fa'
+import styles from './usuarios.module.css'
 
 export default function Usuarios() {
 

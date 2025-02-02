@@ -1,5 +1,4 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import styles from './recibos.module.css'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -7,6 +6,7 @@ import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Lay
 import axios from 'axios'
 import { FaSearch } from 'react-icons/fa'
 import { ReciboForm, RecibosLista, RecibosListSearch, SearchRecibos } from '@/components/Recibos'
+import styles from './recibos.module.css'
 
 export default function Recibos() {
 

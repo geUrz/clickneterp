@@ -60,30 +60,6 @@
   cursor: pointer;
 }
 
-.toggleNota{
-  margin-top: 30px;
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.toggleNota h1{
-  font-size: 14px;
-  color: azure;
-}
-
-.formNota{
-  margin-top: 10px;
-}
-
-.charCount{
-  margin-top: 20px;
-  font-size: 12px;
-}
-
 .iconPlus{
   margin-top: 30px;
   width: 100%;

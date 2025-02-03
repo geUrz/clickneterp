@@ -273,7 +273,7 @@ export function CuentaForm(props) {
       <div className={styles.main}>
         <Form>
           <FormGroup widths='equal'>
-            <FormField>
+            {/* <FormField>
 
               <div className={styles.toggleCot}>
                 {toggle ?
@@ -299,7 +299,7 @@ export function CuentaForm(props) {
                 /> : null
               }
 
-            </FormField>
+            </FormField> */}
             <FormField error={!!errors.cuenta}>
               <Label>Cuenta</Label>
               <Input

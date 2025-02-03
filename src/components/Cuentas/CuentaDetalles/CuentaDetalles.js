@@ -30,10 +30,6 @@ export function CuentaDetalles(props) {
   const [showConfirmDel, setShowConfirmDel] = useState(false)
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
 
-  useEffect(() => {
-    setEditNota(!!(cuenta && cuenta.nota))
-  }, [cuenta?.nota])
-
   const onOpenCloseConfirm = (concepto) => {
     if (!concepto || !concepto.id) {
       console.error('Concepto no válido:', concepto)
@@ -83,45 +79,6 @@ export function CuentaDetalles(props) {
   )
   const iva = subtotal * 0.16
   const total = subtotal + iva
-
-  const [nota, setNota] = useState(cuenta?.nota || '')
-  const [editNota, setEditNota] = useState(!!cuenta?.nota)
-
-  const maxCharacters = 280
-
-  const handleNotaChange = (e) => {
-    const { value } = e.target;
-    if (value.length <= maxCharacters) {
-      setNota(value)
-    }
-  };
-
-  const handleAddNota = async () => {
-    if (!cuenta.id) {
-      console.error("ID de la cuenta no disponible")
-      return;
-    }
-
-    try {
-      const response = await axios.put(`/api/recibos/nota`, {
-        id: cuenta.id,
-        notaValue: nota,
-      })
-
-      if (response.status === 200) {
-        setEditNota(true)
-        onReload()
-      }
-    } catch (error) {
-      console.error('Error al actualizar la nota:', error.response?.data || error.message)
-    }
-  };
-
-  useEffect(() => {
-    if (cuenta?.nota !== undefined) {
-      setEditNota(!!cuenta?.nota)
-    }
-  }, [cuenta?.nota])
 
   const handleDelete = async () => {
     if (!cuenta?.id) {
@@ -244,30 +201,6 @@ export function CuentaDetalles(props) {
           </div>
         </div>
 
-        <div className={styles.toggleNota}>
-          <h1>Nota</h1>
-        </div>
-
-        <div className={styles.formNota}>
-          <Form>
-            <FormGroup>
-              <FormField>
-                <TextArea
-                  value={nota}
-                  onChange={handleNotaChange}
-                  placeholder="Escribe una nota aquí..."
-                />
-                <div className={styles.charCount}>
-                  {nota.length}/{maxCharacters}
-                </div>
-              </FormField>
-            </FormGroup>
-            <Button secondary onClick={handleAddNota}>
-              {editNota ? 'Modificar nota' : 'Añadir nota'}
-            </Button>
-          </Form>
-        </div>
-
         <div className={styles.iconEdit} onClick={onOpenEditCuenta}>
           <div><FaEdit /></div>
         </div>
@@ -296,16 +229,6 @@ export function CuentaDetalles(props) {
           onOpenCloseConfirm={onOpenCloseConfirm}
         />
       </BasicModal>
-
-      {/* <BasicModal title='datos del cliente' show={showCliente} onClose={onOpenCloseCliente}>
-        <DatosCliente
-          folio={getValueOrDefault(cuenta?.cliente_folio)}
-          nombre={getValueOrDefault(cuenta?.cliente_nombre)}
-          cel={getValueOrDefault(cuenta?.cliente_cel)}
-          direccion={getValueOrDefault(cuenta?.cliente_direccion)}
-          email={getValueOrDefault(cuenta?.cliente_email)}
-          onOpenCloseCliente={onOpenCloseCliente} />
-      </BasicModal> */}
 
       <Confirm
         open={showConfirm}
@@ -339,7 +262,7 @@ export function CuentaDetalles(props) {
         }
         onConfirm={handleDelete}
         onCancel={onOpenCloseConfirmDel}
-        content='¿ Estas seguro de eliminar el cuenta ?'
+        content='¿ Estas seguro de eliminar la cuenta ?'
       />
 
     </>

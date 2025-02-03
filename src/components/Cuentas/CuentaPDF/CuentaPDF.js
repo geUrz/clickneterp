@@ -7,11 +7,11 @@ import styles from './CuentaPDF.module.css'
 
 export function CuentaPDF(props) {
 
-  const { recibo, conceptos } = props
+  const { cuenta, conceptos } = props
 
   const generarPDF = async () => {
 
-    if (!recibo) return
+    if (!cuenta) return
 
     const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'true');
 
@@ -62,25 +62,25 @@ export function CuentaPDF(props) {
     doc.text('Cliente', 15, 54)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(recibo.cliente_nombre)}`, 15, 58)
+    doc.text(`${getValueOrDefault(cuenta.cliente_nombre)}`, 15, 58)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Atención a', 15, 64)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(recibo.cliente_contacto)}`, 15, 68)
+    doc.text(`${getValueOrDefault(cuenta.cliente_contacto)}`, 15, 68)
 
     doc.setFontSize(`${font1}`)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(0, 0, 0)
-    doc.text('RECIBO', doc.internal.pageSize.width - marginRight - doc.getTextWidth('RECIBO'), 44)
+    doc.text(`${cuenta.tipo.toUpperCase()}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${cuenta.tipo.toUpperCase()}`), 44)
     doc.setFontSize(`${font2}`)
     doc.setFont("helvetica", "normal")
     doc.setTextColor(0, 0, 0)
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(recibo.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(recibo.folio)}`), 54)
+    doc.text(`${getValueOrDefault(cuenta.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(cuenta.folio)}`), 54)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -88,8 +88,8 @@ export function CuentaPDF(props) {
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text(
-      `${formatDateIncDet(getValueOrDefault(recibo.createdAt))}`,
-      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${formatDateIncDet(getValueOrDefault(recibo.createdAt))}`),
+      `${formatDateIncDet(getValueOrDefault(cuenta.createdAt))}`,
+      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${formatDateIncDet(getValueOrDefault(cuenta.createdAt))}`),
       64
     )
 
@@ -148,32 +148,6 @@ export function CuentaPDF(props) {
 
     const { subtotal, iva, total } = calcularTotales()
 
-    const top = 230
-    const boxWidth = 130
-    const boxHeight = 30
-
-    doc.setDrawColor(255, 255, 255)
-    doc.rect(marginRight, top, boxWidth, boxHeight)
-
-    doc.setFontSize(`${font2}`)
-    doc.setTextColor(0, 0, 0);
-    doc.text('Nota:', marginRight, top - 1)
-
-    doc.setFontSize(`${font3}`)
-    doc.setTextColor(80, 80, 80)
-    const content = recibo.nota === undefined || recibo.nota === null ? (
-      ''
-    ) : (
-      `${recibo.nota}`
-    )
-
-
-    const textX = marginRight
-    const textY = top + 4
-    const txtWidth = boxWidth - 4
-
-    doc.text(content, textX, textY, { maxWidth: txtWidth })
-
     const verticalData = [
       ...toggleIVA ? [
         ['Subtotal:', `$${formatCurrency(subtotal)}`],
@@ -202,13 +176,6 @@ export function CuentaPDF(props) {
       }
     })
 
-
-    doc.setFontSize(`${font3}`)
-    doc.setTextColor(0, 0, 0)
-    doc.text('• Precio en pesos.', 50, 260)
-    doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)
-    doc.text('  por defecto de fabrica.', 50, 270)
-
     const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
     doc.addImage(qrCodeDataUrl, 'PNG', 10, 248, 40, 40)
@@ -225,7 +192,7 @@ export function CuentaPDF(props) {
 
     addFooterText()
 
-    doc.save(`recibo_${recibo.folio}.pdf`)
+    doc.save(`${cuenta.tipo}_${cuenta.folio}.pdf`)
   }
 
   return (

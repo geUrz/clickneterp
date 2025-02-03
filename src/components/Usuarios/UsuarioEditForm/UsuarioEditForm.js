@@ -96,7 +96,7 @@ export function UsuarioEditForm(props) {
 
   const opcionesNivel = [
     { key: 1, text: 'Admin', value: 'Admin' },
-    { key: 2, text: 'Técnico', value: 'Tecnico' }
+    { key: 2, text: 'Técnico', value: 'Técnico' }
   ]
 
   const opcionesIsActive = [

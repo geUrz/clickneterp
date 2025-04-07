@@ -8,6 +8,7 @@
 }
 
 .section{
+  margin-top: 20px;
   width: 100%;
   height: auto;
 }
@@ -84,6 +85,39 @@
   text-align: right;
 }
 
+.iconPlus{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPlus div{
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--bg1);
+  cursor: pointer;
+}
+
+.iconPlus div:hover{
+  background-color: var(--bg2);
+}
+
+.iconPlus div:active{
+  background-color: var(--bg3);
+}
+
+.iconPlus svg, .iconPlus path{
+  font-size: 18px;
+  cursor: pointer;
+}
+
 .iconClose{
   position: absolute;
   top: 10px;
@@ -150,6 +184,10 @@
 .toggleON svg, .toggleOn svg, .toggleON path, .toggleOn path{
   color: var(--clr1);
   cursor: pointer;
+}
+
+.ivaInput{
+  width: 38px !important;
 }
 
 .box3{

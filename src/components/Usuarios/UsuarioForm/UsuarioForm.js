@@ -98,6 +98,21 @@ export function UsuarioForm(props) {
         confirmarPassword: ''
       });
 
+      await axios.post('/api/notificaciones', 
+        {
+          title: 'Usuario creado',
+          body: `${nombre}`,
+          data: {
+            url: '/usuarios' 
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', 
+          },
+        }
+      )
+
       setError(null);
       onReload()
       onOpenCloseForm()

@@ -39,6 +39,10 @@
   font-size: 14px;
 }
 
+.datos_1 h2{
+  text-transform: capitalize;
+}
+
 .datos_2 h2{
   text-align: right;
 }
@@ -115,6 +119,11 @@
 .iconPlus svg, .iconPlus path{
   font-size: 18px;
   cursor: pointer;
+}
+
+.ivaInput{
+  margin: 0 4px;
+  width: 38px !important;
 }
 
 .sectionTotal{

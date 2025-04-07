@@ -16,6 +16,7 @@ export default async function handler(req, res) {
                     recibo,
                     nota,
                     folioref,
+                    iva,
                     createdAt
                 FROM recibos 
                 WHERE id = ?
@@ -43,6 +44,7 @@ export default async function handler(req, res) {
                         recibos.recibo,
                         recibos.nota,  
                         recibos.folioref,
+                        recibos.iva,
                         conceptosrec.concepto AS concepto,
                         recibos.createdAt
                     FROM recibos
@@ -84,6 +86,7 @@ export default async function handler(req, res) {
                   recibos.recibo,
                   recibos.nota,  
                   recibos.folioref,
+                  recibos.iva,
                   recibos.createdAt
                 FROM recibos
                 JOIN clientes ON recibos.cliente_id = clientes.id
@@ -96,12 +99,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Maneja la solicitud POST
-        const { usuario_id, folio, cliente_id, recibo, nota, folioref } = req.body;
+        const { usuario_id, folio, cliente_id, recibo, nota, folioref, iva } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO recibos (usuario_id, folio, cliente_id, recibo, nota, folioref) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [usuario_id, folio, cliente_id, recibo, nota, folioref]
+                'INSERT INTO recibos (usuario_id, folio, cliente_id, recibo, nota, folioref, iva) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [usuario_id, folio, cliente_id, recibo, nota, folioref, iva]
             );
             res.status(201).json({ id: result.insertId });
         } catch (error) {

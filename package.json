@@ -1,11 +1,12 @@
 {
   "name": "clickneterp",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",
-    "start": "next start -p 3002",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -16,9 +17,12 @@
     "cookie": "^0.6.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.12",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "formik": "^2.4.6",
     "googleapis": "^140.0.1",
     "html2canvas": "^1.4.1",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
@@ -43,6 +47,11 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "sharp": "^0.33.5",
+    "socket.io": "^4.8.1",
+    "web-push": "^3.6.7",
     "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }

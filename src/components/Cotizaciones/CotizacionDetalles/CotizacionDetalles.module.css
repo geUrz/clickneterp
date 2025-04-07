@@ -122,6 +122,11 @@
   cursor: pointer;
 }
 
+.ivaInput{
+  margin: 0 4px;
+  width: 38px !important;
+}
+
 .sectionTotal{
   margin-top: 30px;
   width: 100%;
@@ -153,7 +158,11 @@
 }
 
 .sectionTotal_2 h1{
-  margin: 3.5px 0 !important;
+  margin: 4px 0 !important;
+}
+
+.sectionTotal_1 h1:nth-child(2){
+  margin: 9.5px 0 !important;
 }
 
 .sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){

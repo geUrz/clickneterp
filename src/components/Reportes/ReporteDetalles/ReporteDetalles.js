@@ -121,6 +121,12 @@ export function ReporteDetalles(props) {
     setSelectedImageKey(null)
   }
 
+  const [reporteState, setReporteState] = useState(reporte)
+
+  useEffect(() => {
+    setReporteState(reporte)
+  }, [reporte])
+
   const [showConfirmDelImg, setShowConfirmDelImg] = useState(null)
   const [imageToDelete, setImageToDelete] = useState(null)
 
@@ -179,14 +185,14 @@ export function ReporteDetalles(props) {
     if (newTitle.length <= MAX_TITLE_LENGTH) {
       setCurrentTitle(newTitle)
     }
-  };
+  }
 
 
   const handleEditTitle = (title, key) => {
     setCurrentTitle(title)
     setCurrentTitleKey(key)
     setShowEditTitleModal(true)
-  };
+  }
 
   const handleSaveTitle = async () => {
     try {
@@ -270,6 +276,10 @@ export function ReporteDetalles(props) {
 
       if (response.status === 200) {
         setEditNota(true)
+        setReporteData(prevState => ({
+          ...prevState,
+          nota: nota
+        }))
         onReload()
       }
     } catch (error) {
@@ -280,6 +290,19 @@ export function ReporteDetalles(props) {
   useEffect(() => {
     if (reporte.nota) setEditNota(true)
   }, [reporte])
+
+  const [reporteData, setReporteData] = useState(reporte)
+
+  useEffect(() => {
+    setReporteData(reporte) 
+  }, [reporte]) 
+
+  const actualizarReporte = (nuevaData) => {
+    setReporteData((prevState) => ({
+      ...prevState,
+      ...nuevaData, 
+    }))
+  }
 
   const fetchFirmaTec = async () => {
     try {
@@ -435,39 +458,35 @@ export function ReporteDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Reporte</h1>
-              <h2>{getValueOrDefault(reporte.reporte)}</h2>
+              <h2>{getValueOrDefault(reporteData?.reporte)}</h2>
             </div>
             <div>
               <h1>Descripción</h1>
-              <h2>{getValueOrDefault(reporte.descripcion)}</h2>
+              <h2>{getValueOrDefault(reporteData?.descripcion)}</h2>
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(reporte.cliente_nombre)}</h2>
-            </div>
-            <div>
-              <h1>Contacto</h1>
-              <h2>{getValueOrDefault(reporte.cliente_contacto)}</h2>
+              <h2>{getValueOrDefault(reporteData?.cliente_nombre)}</h2>
             </div>
           </div>
           <div className={styles.box1_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(reporte.folio)}</h2>
+              <h2>{getValueOrDefault(reporteData?.folio)}</h2>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h2>{getValueOrDefault(formatDateIncDet(reporte.createdAt))}</h2>
+              <h2>{getValueOrDefault(formatDateIncDet(reporteData?.createdAt))}</h2>
             </div>
             <div>
               <h1>Técnico</h1>
-              <h2>{getValueOrDefault(reporte.usuario_nombre)}</h2>
+              <h2>{getValueOrDefault(reporteData?.usuario_nombre)}</h2>
             </div>
           </div>
         </div>
 
         <div className={styles.pagina}>
-          <h1>Página 2</h1>
+          <h1>Descripción 2</h1>
           {togglePagina2 ?
             <div className={styles.toggleON}><BiSolidToggleRight onClick={onTogglePagina2} /></div> :
             <div className={styles.toggleOFF}><BiSolidToggleLeft onClick={onTogglePagina2} /></div>
@@ -587,12 +606,12 @@ export function ReporteDetalles(props) {
           </>
         ) : null}
 
-        <ReportePDF reporte={reporte} firmaTec={firmaTec} firmaCli={firmaCli} toggleEvi={toggleEvi} toggleEviAD={toggleEviAD} togglePagina2={togglePagina2} />
+        <ReportePDF reporteData={reporteData} firmaTec={firmaTec} firmaCli={firmaCli} toggleEvi={toggleEvi} toggleEviAD={toggleEviAD} togglePagina2={togglePagina2} />
 
       </div>
 
       <BasicModal title="Modificar el reporte" show={showEditReporte} onClose={onOpenEditReporte}>
-        <ReporteEditForm reload={reload} onReload={onReload} reporte={reporte} onOpenEditReporte={onOpenEditReporte} onToastSuccessMod={onToastSuccessMod} />
+        <ReporteEditForm reload={reload} onReload={onReload} reporteData={reporteData} actualizarReporte={actualizarReporte} onOpenEditReporte={onOpenEditReporte} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title="Subir imagen" show={showSubirImg} onClose={onCloseSubirImg}>

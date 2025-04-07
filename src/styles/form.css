@@ -19,11 +19,13 @@
 }
 
 .ui.form .field.field input:-webkit-autofill{
+  color: white !important;
   box-shadow: 0 0 0 100px var(--bg2) inset !important;
   border-color: var(--bg2) !important;
 }
 
 .ui.form .field.field input:-webkit-autofill:focus{
+  color: white !important;
   box-shadow: 0 0 0 100px var(--bg4) inset !important;
   border-color: var(--bg4) !important;
 }
@@ -82,7 +84,12 @@
 }
 
 .field.error input, .field.error select, .field.error textarea{
-  border: 1px solid rgb(167, 0, 0) !important;
+  border: 1px solid azure !important;
+}
+
+.ui.message{
+  text-align: center;
+  color: red !important;
 }
 
 .rbc-agenda-view table{
@@ -101,6 +108,7 @@
 }
 
 .ui.dropdown .menu .item span, .ui.dropdown .text{
+  text-transform: capitalize;
   cursor: pointer !important;
   color: azure !important;
 }

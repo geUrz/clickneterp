@@ -6,10 +6,10 @@ import { formatDateIncDet, getValueOrDefault } from '@/helpers'
 import styles from './ReportePDF.module.css'
 
 export function ReportePDF(props) {
-  const { reporte, firmaCli, firmaTec, toggleEvi, toggleEviAD, togglePagina2 } = props
+  const { reporteData, firmaCli, firmaTec, toggleEvi, toggleEviAD, togglePagina2 } = props
 
   const generarPDF = async () => {
-    if (!reporte) return
+    if (!reporteData) return
 
     const doc = new jsPDF({
       orientation: 'p',
@@ -21,7 +21,7 @@ export function ReportePDF(props) {
       const text = 'www.clicknetmx.com'
       const textWidth = doc.getTextWidth(text)
       const x = (pageWidth - textWidth) / 2
-      const y = doc.internal.pageSize.height - 5 // Posición a 10 mm del borde inferior
+      const y = doc.internal.pageSize.height - 5
       doc.setFontSize(8)
       doc.setTextColor(120, 120, 120)
       doc.text(text, x, y)
@@ -48,32 +48,32 @@ export function ReportePDF(props) {
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('#######', 15, 23)
+    doc.text('CLICKNETMX', 15, 23)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('###################', 15, 27)
-    doc.text('####################', 15, 31)
-    doc.text('###################', 15, 35)
-    doc.text('#########', 15, 39)
+    doc.text('Punta Este Corporativo', 15, 27)
+    doc.text('Calzada Carranza 951,', 15, 31)
+    doc.text('Piso 10 Suite 304, Interior "E"', 15, 35)
+    doc.text('C.P. 2125', 15, 39)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('############################', 15, 43)
+    doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('##############', 15, 47)
+    doc.text('RFC: EIEJ8906244J3', 15, 47)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Cliente', 15, 54)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(reporte.cliente_nombre)}`, 15, 58)
+    doc.text(`${getValueOrDefault(reporteData.cliente_nombre)}`, 15, 58)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Atención a', 15, 64)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(reporte.cliente_contacto)}`, 15, 68)
+    doc.text(`${getValueOrDefault(reporteData.cliente_contacto)}`, 15, 68)
 
     doc.setFontSize(`${font1}`)
     doc.setFont("helvetica", "bold")
@@ -85,7 +85,7 @@ export function ReportePDF(props) {
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(reporte.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(reporte.folio)}`), 54)
+    doc.text(`${getValueOrDefault(reporteData.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(reporteData.folio)}`), 54)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -93,8 +93,8 @@ export function ReportePDF(props) {
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text(
-      `${getValueOrDefault(formatDateIncDet(reporte.createdAt))}`,
-      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${getValueOrDefault(formatDateIncDet(reporte.createdAt))}`),
+      `${getValueOrDefault(formatDateIncDet(reporteData.createdAt))}`,
+      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${getValueOrDefault(formatDateIncDet(reporteData.createdAt))}`),
       64
     )
 
@@ -109,7 +109,7 @@ export function ReportePDF(props) {
         cellPadding: 2.5,
         cellWidth: 'auto',
       },
-      body: [[reporte.descripcion || 'Sin descripción']],
+      body: [[reporteData.descripcion || 'Sin descripción']],
       headStyles: { fillColor: [240, 240, 240], fontSize: `${font2}`, textColor: [50, 50, 50] },
       bodyStyles: { fontSize: `${font3}` },
       alternateRowStyles: { fillColor: [255, 255, 255] },
@@ -137,10 +137,10 @@ export function ReportePDF(props) {
 
     doc.setFontSize(`${font3}`)
     doc.setTextColor(80, 80, 80)
-    const content = reporte.nota === undefined || reporte.nota === null ? (
+    const content = reporteData.nota === undefined || reporteData.nota === null ? (
       ''
     ) : (
-      `${reporte.nota}`
+      `${reporteData.nota}`
     )
 
 
@@ -197,7 +197,7 @@ export function ReportePDF(props) {
           cellPadding: 2.5,
           cellWidth: 'auto',
         },
-        body: [[reporte.page2 || 'Sin descripción']],
+        body: [[reporteData.page2 || 'Sin descripción']],
         headStyles: { fillColor: [240, 240, 240], fontSize: `${font2}`, textColor: [50, 50, 50] },
         bodyStyles: { fontSize: `${font3}` },
         alternateRowStyles: { fillColor: [255, 255, 255] },
@@ -239,16 +239,16 @@ export function ReportePDF(props) {
       addFooterText()
 
       const imgEvi = [
-        { img: reporte.img1, title: reporte.title1 },
-        { img: reporte.img2, title: reporte.title2 },
-        { img: reporte.img3, title: reporte.title3 },
-        { img: reporte.img4, title: reporte.title4 },
-        { img: reporte.img5, title: reporte.title5 },
-        { img: reporte.img6, title: reporte.title6 },
-        { img: reporte.img7, title: reporte.title7 },
-        { img: reporte.img8, title: reporte.title8 },
-        { img: reporte.img9, title: reporte.title9 },
-        { img: reporte.img10, title: reporte.title10 }
+        { img: reporteData.img1, title: reporteData.title1 },
+        { img: reporteData.img2, title: reporteData.title2 },
+        { img: reporteData.img3, title: reporteData.title3 },
+        { img: reporteData.img4, title: reporteData.title4 },
+        { img: reporteData.img5, title: reporteData.title5 },
+        { img: reporteData.img6, title: reporteData.title6 },
+        { img: reporteData.img7, title: reporteData.title7 },
+        { img: reporteData.img8, title: reporteData.title8 },
+        { img: reporteData.img9, title: reporteData.title9 },
+        { img: reporteData.img10, title: reporteData.title10 }
       ]
 
       let firstRowTopMargin = 26
@@ -298,16 +298,16 @@ export function ReportePDF(props) {
       addFooterText()
 
       const imgAntes = [
-        { img: reporte.img1, title: reporte.title1 },
-        { img: reporte.img2, title: reporte.title2 },
-        { img: reporte.img3, title: reporte.title3 },
-        { img: reporte.img4, title: reporte.title4 },
-        { img: reporte.img5, title: reporte.title5 },
-        { img: reporte.img6, title: reporte.title6 },
-        { img: reporte.img7, title: reporte.title7 },
-        { img: reporte.img8, title: reporte.title8 },
-        { img: reporte.img9, title: reporte.title9 },
-        { img: reporte.img10, title: reporte.title10 }
+        { img: reporteData.img1, title: reporteData.title1 },
+        { img: reporteData.img2, title: reporteData.title2 },
+        { img: reporteData.img3, title: reporteData.title3 },
+        { img: reporteData.img4, title: reporteData.title4 },
+        { img: reporteData.img5, title: reporteData.title5 },
+        { img: reporteData.img6, title: reporteData.title6 },
+        { img: reporteData.img7, title: reporteData.title7 },
+        { img: reporteData.img8, title: reporteData.title8 },
+        { img: reporteData.img9, title: reporteData.title9 },
+        { img: reporteData.img10, title: reporteData.title10 }
       ]
 
       let firstRowTopMargin = 26
@@ -342,16 +342,16 @@ export function ReportePDF(props) {
       })
 
       const imgDespues = [
-        { img: reporte.img11, title: reporte.title11 },
-        { img: reporte.img12, title: reporte.title12 },
-        { img: reporte.img13, title: reporte.title13 },
-        { img: reporte.img14, title: reporte.title14 },
-        { img: reporte.img15, title: reporte.title15 },
-        { img: reporte.img16, title: reporte.title16 },
-        { img: reporte.img17, title: reporte.title17 },
-        { img: reporte.img18, title: reporte.title18 },
-        { img: reporte.img19, title: reporte.title19 },
-        { img: reporte.img20, title: reporte.title20 }
+        { img: reporteData.img11, title: reporteData.title11 },
+        { img: reporteData.img12, title: reporteData.title12 },
+        { img: reporteData.img13, title: reporteData.title13 },
+        { img: reporteData.img14, title: reporteData.title14 },
+        { img: reporteData.img15, title: reporteData.title15 },
+        { img: reporteData.img16, title: reporteData.title16 },
+        { img: reporteData.img17, title: reporteData.title17 },
+        { img: reporteData.img18, title: reporteData.title18 },
+        { img: reporteData.img19, title: reporteData.title19 },
+        { img: reporteData.img20, title: reporteData.title20 }
       ]
 
       posY = firstRowTopMargin
@@ -380,7 +380,7 @@ export function ReportePDF(props) {
 
     }
 
-    doc.save(`reporte_${reporte.folio}.pdf`)
+    doc.save(`reporte_${reporteData.folio}.pdf`)
   }
 
   const compartirPDF = () => {

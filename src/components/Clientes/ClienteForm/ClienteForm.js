@@ -57,6 +57,19 @@ export function ClienteForm(props) {
         email,
       })
 
+      await axios.post('/api/notificaciones', 
+        {
+          title: 'Cliente creado',
+          body: `${nombre}`,
+          url: '/clientes' 
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', 
+          },
+        }
+      )
+
       setNombre('')
       setContacto('')
       setCel('')

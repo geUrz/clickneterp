@@ -8,11 +8,57 @@ import { ReciboConceptos } from '../ReciboConceptos'
 import { ReciboPDF } from '../ReciboPDF'
 import { ReciboConceptosForm } from '../ReciboConceptosForm'
 import axios from 'axios'
-import { Button, Form, FormField, FormGroup, TextArea } from 'semantic-ui-react'
+import { Button, Form, FormField, FormGroup, Input, TextArea } from 'semantic-ui-react'
 import { RowHeadModal } from '../RowHead'
 import { ReciboEditForm } from '../ReciboEditForm'
 import { ReciboConceptosEditForm } from '../ReciboConceptosEditForm'
 import styles from './ReciboDetalles.module.css'
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CotizacionesDB', 1)
+
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings')
+      }
+    }
+
+    request.onsuccess = (e) => resolve(e.target.result)
+    request.onerror = (e) => reject(e.target.error)
+  })
+}
+
+const saveToggleIVA = async (value) => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readwrite')
+  const store = transaction.objectStore('settings')
+  
+  store.put({ toggleIVA: value }, 'toggleIVA')
+  
+  transaction.oncomplete = () => {
+  }
+  transaction.onerror = (e) => {
+  }
+}
+
+
+const getToggleIVA = async () => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readonly')
+  const store = transaction.objectStore('settings')
+  
+  return new Promise((resolve, reject) => {
+    const request = store.get('toggleIVA')
+    request.onsuccess = (e) => {
+      resolve(e.target.result?.toggleIVA || false)
+    }
+    request.onerror = (e) => {
+      reject(e.target.error)
+    }
+  })
+}
 
 export function ReciboDetalles(props) {
 
@@ -30,10 +76,6 @@ export function ReciboDetalles(props) {
   const [showConfirmDel, setShowConfirmDel] = useState(false)
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
 
-  useEffect(() => {
-    setEditNota(!!(recibo && recibo.nota))
-  }, [recibo?.nota])
-
   const onOpenCloseConfirm = (concepto) => {
     if (!concepto || !concepto.id) {
       console.error('Concepto no válido:', concepto)
@@ -42,7 +84,6 @@ export function ReciboDetalles(props) {
     setShowConfirm((prevState) => !prevState)
     setCurrentConcept(concepto.id)
   }
-
 
   const onOpenCloseConcep = (concepto) => {
     setShowForm((prevState) => !prevState)
@@ -60,29 +101,29 @@ export function ReciboDetalles(props) {
     setShowEditConcept(false)
   }
 
-  const [toggleIVA, setToggleIVA] = useState(false)
+  const [reciboState, setReciboState] = useState(recibo)
 
-  const onIVA = () => {
-    setToggleIVA((prevState) => !prevState)
+  useEffect(() => {
+    setReciboState(recibo)
+  }, [recibo])
+  
+
+  const onEditConcept = (conceptoActualizado) => {
+    if (!reciboState) return;
+  
+    setReciboState((prevRecibo) => {
+      const conceptosActualizados = prevRecibo.conceptos.map((c) =>
+        c.id === conceptoActualizado.id ? conceptoActualizado : c
+      )
+  
+      return {
+        ...prevRecibo,
+        conceptos: conceptosActualizados,
+      }
+    })
+  
+    onReload() 
   }
-
-  useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
-    if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
-
-  const subtotal = (recibo?.conceptos || []).reduce(
-    (sum, concepto) => sum + concepto.precio * concepto.cantidad,
-    0
-  )
-  const iva = subtotal * 0.16
-  const total = subtotal + iva
 
   const [nota, setNota] = useState(recibo?.nota || '')
   const [editNota, setEditNota] = useState(!!recibo?.nota)
@@ -110,18 +151,16 @@ export function ReciboDetalles(props) {
 
       if (response.status === 200) {
         setEditNota(true)
+        setReciboData(prevState => ({
+          ...prevState,
+          nota: nota
+        }))
         onReload()
       }
     } catch (error) {
       console.error('Error al actualizar la nota:', error.response?.data || error.message)
     }
   };
-
-  useEffect(() => {
-    if (recibo?.nota !== undefined) {
-      setEditNota(!!recibo?.nota)
-    }
-  }, [recibo?.nota])
 
   const handleDelete = async () => {
     if (!recibo?.id) {
@@ -140,6 +179,94 @@ export function ReciboDetalles(props) {
     }
   }
 
+  const [reciboData, setReciboData] = useState(recibo)
+
+  useEffect(() => {
+    setReciboData(recibo) 
+  }, [recibo]) 
+
+  const actualizarRecibo = (nuevaData) => {
+    setReciboData((prevState) => ({
+      ...prevState,
+      ...nuevaData, 
+    }))
+  }
+
+  useEffect(() => {
+      setEditNota(!!(reciboData && reciboData.nota))
+    }, [reciboData?.nota])
+  
+    useEffect(() => {
+      if (reciboData?.nota !== undefined) {
+        setEditNota(!!reciboData?.nota)
+      }
+    }, [reciboData?.nota])
+
+    const [toggleIVA, setToggleIVA] = useState(false)
+  
+  // Cargar el valor inicial de toggleIVA desde IndexedDB
+  useEffect(() => {
+    const fetchToggleIVA = async () => {
+      const storedToggleIVA = await getToggleIVA()
+      setToggleIVA(storedToggleIVA)
+    }
+    fetchToggleIVA()
+  }, [])  
+  
+  const onIVA = () => {
+    setToggleIVA(prevState => {
+      const newState = !prevState;
+      saveToggleIVA(newState) // Guardar el valor en IndexedDB
+      return newState;
+    })
+  }
+  
+  const [ivaValue, setIvaValue] = useState(16)
+  
+  useEffect(() => {
+    const fetchIvaValue = async () => {
+      try {
+        const response = await axios.get(`/api/recibos/recibos?id=${recibo.id}`)
+        const iva = response.data?.iva || 16  // Si IVA es null o no existe, se usa 16
+        setIvaValue(iva)
+      } catch (error) {
+        console.error("Error al obtener el IVA:", error)
+      }
+    }
+
+    if (reciboId) {
+      fetchIvaValue()
+    }
+  }, [reciboId])
+
+  const saveIvaValue = async (newIvaValue) => {
+    try {
+      await axios.put(`/api/recibos/iva?id=${recibo.id}`, {
+        iva: newIvaValue
+      })
+    } catch (error) {
+      console.error("Error al actualizar el IVA:", error)
+    }
+  }
+
+  const handleIvaChange = (e) => {
+    const newIvaValue = e.target.value
+    if (/^\d{0,2}$/.test(newIvaValue)) {
+      setIvaValue(newIvaValue)
+      saveIvaValue(newIvaValue)  // Guardar el nuevo valor de IVA directamente
+    }
+  }
+
+  const calcularTotales = () => {
+    const subtotal = reciboState?.conceptos?.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0) || 0
+    const ivaDecimal = ivaValue / 100
+    const iva = toggleIVA ? subtotal * ivaDecimal : 0
+    const total = subtotal + iva
+    return { subtotal, iva, total }
+  }
+
+  const { subtotal, iva, total } = calcularTotales()
+
   if (loading) {
     return <Loading size={45} loading={1} />
   }
@@ -157,36 +284,36 @@ export function ReciboDetalles(props) {
           <div className={styles.datos_1}>
             <div>
               <h1>Recibo</h1>
-              <h2>{getValueOrDefault(recibo?.recibo)}</h2>
+              <h2>{getValueOrDefault(reciboData?.recibo)}</h2>
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(recibo?.cliente_nombre)}</h2>
+              <h2>{getValueOrDefault(reciboData?.cliente_nombre)}</h2>
             </div>
             <div>
               <h1>Atención a</h1>
-              <h2>{getValueOrDefault(recibo?.cliente_contacto)}</h2>
+              <h2>{getValueOrDefault(reciboData?.cliente_contacto)}</h2>
             </div>
           </div>
           <div className={styles.datos_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(recibo?.folio)}</h2>
+              <h2>{getValueOrDefault(reciboData?.folio)}</h2>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h2>{getValueOrDefault(formatDateIncDet(recibo?.createdAt))}</h2>
+              <h2>{getValueOrDefault(formatDateIncDet(reciboData?.createdAt))}</h2>
             </div>
             <div>
               <h1>F / R</h1>
-              <h2>{getValueOrDefault(recibo?.folioref)}</h2>
+              <h2>{getValueOrDefault(reciboData?.folioref)}</h2>
             </div>
           </div>
         </div>
 
         <RowHeadModal rowMain />
 
-        <ReciboConceptos conceptos={recibo?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
+        <ReciboConceptos conceptos={reciboState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
 
         <div className={styles.iconPlus}>
           <div onClick={onOpenCloseConcep}>
@@ -195,54 +322,57 @@ export function ReciboDetalles(props) {
         </div>
 
         <div className={styles.sectionTotal}>
-          <div className={styles.sectionTotal_1}>
-            <h1>Subtotal:</h1>
+            <div className={styles.sectionTotal_1}>
+              <h1>Subtotal:</h1>
 
-            {!toggleIVA ? (
+              {!toggleIVA ? (
+                <div className={styles.toggleOFF} onClick={onIVA}>
+                  <BiSolidToggleLeft />
+                  <h1>IVA:</h1>
+                </div>
+              ) : (
+                <div className={styles.toggleON}>
+                  <Form>
+                    <FormGroup>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
+                    </FormGroup>
+                  </Form>
+                  <h1>%</h1>
+                  <BiSolidToggleRight onClick={onIVA} />
+                  <h1>IVA:</h1>
+                </div>
+              )}
 
-              <div className={styles.toggleOFF}>
-                <BiSolidToggleLeft onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
+              <h1>Total:</h1>
+            </div>
 
-            ) : (
+            <div className={styles.sectionTotal_2}>
+              
+              {!toggleIVA ? (
+                <>
+                  <h1>-</h1>
+                  <h1>-</h1>
+                </>
+              ) : (
+                <>
+                  <h1>${formatCurrency(subtotal)}</h1>
+                  <h1>${formatCurrency(iva)}</h1>
+                </>
+              )}
 
-              <div className={styles.toggleON}>
-                <BiSolidToggleRight onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
-
-            )}
-
-            <h1>Total:</h1>
-          </div>
-
-          <div className={styles.sectionTotal_2}>
-
-            {!toggleIVA ? (
-              <>
-
-                <h1>-</h1>
-                <h1>-</h1>
-
-              </>
-            ) : (
-              <>
-
+              {!toggleIVA ? (
                 <h1>${formatCurrency(subtotal)}</h1>
-                <h1>${formatCurrency(iva)}</h1>
-
-              </>
-            )}
-
-            {!toggleIVA ? (
-              <h1>${formatCurrency(subtotal)}</h1>
-            ) : (
-              <h1>${formatCurrency(total)}</h1>
-            )}
-
+              ) : (
+                <h1>${formatCurrency(total)}</h1>
+              )}
+            </div>
           </div>
-        </div>
 
         <div className={styles.toggleNota}>
           <h1>Nota</h1>
@@ -275,12 +405,12 @@ export function ReciboDetalles(props) {
           <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
         </div>
 
-        <ReciboPDF recibo={recibo} conceptos={recibo?.conceptos || []} />
+        <ReciboPDF reciboData={reciboData} conceptos={reciboState?.conceptos || []} ivaValue={ivaValue} />
 
       </div>
 
       <BasicModal title='modificar el recibo' show={showEditRecibo} onClose={onOpenEditRecibo}>
-        <ReciboEditForm reload={reload} onReload={onReload} recibo={recibo} onOpenEditRecibo={onOpenEditRecibo} onToastSuccessMod={onToastSuccessMod} />
+        <ReciboEditForm reload={reload} onReload={onReload} reciboData={reciboData} actualizarRecibo={actualizarRecibo} onOpenEditRecibo={onOpenEditRecibo} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
@@ -291,6 +421,7 @@ export function ReciboDetalles(props) {
         <ReciboConceptosEditForm
           reload={reload}
           onReload={onReload}
+          onEditConcept={onEditConcept}
           conceptToEdit={currentConcept}
           onOpenCloseEditConcep={onOpenCloseEditConcep}
           onOpenCloseConfirm={onOpenCloseConfirm}

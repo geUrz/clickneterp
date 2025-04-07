@@ -1,4 +1,4 @@
-import { Button, Form, FormField, FormGroup, Input, Label } from 'semantic-ui-react'
+import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicJoin } from '@/layouts'
@@ -129,7 +129,7 @@ export default function Signin() {
               value={credentials.emailOrUsuario}
               onChange={handleChange}
             />
-            {errors.emailOrUsuario && <span className={styles.error}>{errors.emailOrUsuario}</span>}
+            {errors.emailOrUsuario && <Message>{errors.emailOrUsuario}</Message>}
           </FormField>
           <FormField error={!!errors.password}>
             <Label>Contraseña</Label>
@@ -139,10 +139,10 @@ export default function Signin() {
               value={credentials.password}
               onChange={handleChange}
             />
-            {errors.password && <span className={styles.error}>{errors.password}</span>}
+            {errors.password && <Message>{errors.password}</Message>}
           </FormField>
         </FormGroup>
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <Message>{error}</Message>}
         <Button primary type='submit'>Iniciar sesión</Button>
       </Form>
 

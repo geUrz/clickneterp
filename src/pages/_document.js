@@ -4,11 +4,10 @@ export default function Document() {
   return (
     <Html lang="es">
       <Head>
-      <script
-            src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
-            async
-          ></script>
-      </Head>
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#000000" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
       <body>
         <Main />
         <NextScript />

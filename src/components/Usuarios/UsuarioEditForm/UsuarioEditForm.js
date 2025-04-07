@@ -77,7 +77,7 @@ export function UsuarioEditForm(props) {
         email: formData.newEmail,
         nivel: formData.newNivel,
         isactive: formData.newIsActive,
-        password: formData.newPassword,
+        password: formData.newPassword
       })
 
       onReload()

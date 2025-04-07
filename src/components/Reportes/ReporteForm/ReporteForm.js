@@ -96,6 +96,21 @@ export function ReporteForm(props) {
         descripcion
       })
 
+      await axios.post('/api/notificaciones', 
+        {
+          title: 'Reporte creado',
+          body: `${reporte}`,
+          data: {
+            url: '/reportes' 
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', 
+          },
+        }
+      )
+
       setReporte('')
       setCliente('')
       setDescripcion('')

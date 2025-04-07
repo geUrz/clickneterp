@@ -102,6 +102,7 @@
 
 .column2 h2{
   font-size: 14px;
+  text-transform: capitalize;
   cursor: pointer;
 }
 

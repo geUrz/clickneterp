@@ -8,11 +8,57 @@ import { CotizacionConceptos } from '../CotizacionConceptos'
 import { CotizacionPDF } from '../CotizacionPDF'
 import { CotizacionConceptosForm } from '../CotizacionConceptosForm'
 import axios from 'axios'
-import { Button, Form, FormField, FormGroup, TextArea } from 'semantic-ui-react'
+import { Button, Form, FormField, FormGroup, Input, TextArea } from 'semantic-ui-react'
 import { RowHeadModal } from '../RowHead'
 import { CotizacionEditForm } from '../CotizacionEditForm'
 import { CotizacionConceptosEditForm } from '../CotizacionConceptosEditForm'
 import styles from './CotizacionDetalles.module.css'
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CotizacionesDB', 1)
+
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings')
+      }
+    }
+
+    request.onsuccess = (e) => resolve(e.target.result)
+    request.onerror = (e) => reject(e.target.error)
+  })
+}
+
+const saveToggleIVA = async (value) => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readwrite')
+  const store = transaction.objectStore('settings')
+  
+  store.put({ toggleIVA: value }, 'toggleIVA')
+  
+  transaction.oncomplete = () => {
+  }
+  transaction.onerror = (e) => {
+  }
+}
+
+
+const getToggleIVA = async () => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readonly')
+  const store = transaction.objectStore('settings')
+  
+  return new Promise((resolve, reject) => {
+    const request = store.get('toggleIVA')
+    request.onsuccess = (e) => {
+      resolve(e.target.result?.toggleIVA || false)
+    }
+    request.onerror = (e) => {
+      reject(e.target.error)
+    }
+  })
+}
 
 export function CotizacionDetalles(props) {
 
@@ -31,16 +77,16 @@ export function CotizacionDetalles(props) {
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
 
   useEffect(() => {
-    setEditNota(!!(cotizacion && cotizacion.nota));
+    setEditNota(!!(cotizacion && cotizacion.nota))
   }, [cotizacion?.nota])
 
   const onOpenCloseConfirm = (concepto) => {
     if (!concepto || !concepto.id) {
-      console.error('Concepto no válido:', concepto);
+      console.error('Concepto no válido:', concepto)
       return;
     }
-    setShowConfirm((prevState) => !prevState);
-    setCurrentConcept(concepto.id);
+    setShowConfirm((prevState) => !prevState)
+    setCurrentConcept(concepto.id)
   }
 
 
@@ -60,29 +106,29 @@ export function CotizacionDetalles(props) {
     setShowEditConcept(false)
   }
 
-  const [toggleIVA, setToggleIVA] = useState(false)
+  const [cotizacionState, setCotizacionState] = useState(cotizacion)
 
-  const onIVA = () => {
-    setToggleIVA((prevState) => !prevState)
+  useEffect(() => {
+    setCotizacionState(cotizacion)
+  }, [cotizacion])
+
+
+  const onEditConcept = (conceptoActualizado) => {
+    if (!cotizacionState) return;
+
+    setCotizacionState((prevRecibo) => {
+      const conceptosActualizados = prevRecibo.conceptos.map((c) =>
+        c.id === conceptoActualizado.id ? conceptoActualizado : c
+      )
+
+      return {
+        ...prevRecibo,
+        conceptos: conceptosActualizados,
+      }
+    })
+
+    onReload()
   }
-
-  useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
-    if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA));
-  }, [toggleIVA])
-
-  const subtotal = (cotizacion?.conceptos || []).reduce(
-    (sum, concepto) => sum + concepto.precio * concepto.cantidad,
-    0
-  )
-  const iva = subtotal * 0.16
-  const total = subtotal + iva
 
   const [nota, setNota] = useState(cotizacion?.nota || '')
   const [editNota, setEditNota] = useState(!!cotizacion?.nota)
@@ -92,13 +138,13 @@ export function CotizacionDetalles(props) {
   const handleNotaChange = (e) => {
     const { value } = e.target;
     if (value.length <= maxCharacters) {
-      setNota(value);
+      setNota(value)
     }
-  };
+  }
 
   const handleAddNota = async () => {
     if (!cotizacion.id) {
-      console.error("ID de la cotización no disponible");
+      console.error("ID de la cotización no disponible")
       return;
     }
 
@@ -106,31 +152,29 @@ export function CotizacionDetalles(props) {
       const response = await axios.put(`/api/cotizaciones/nota`, {
         id: cotizacion.id,
         notaValue: nota,
-      });
+      })
 
       if (response.status === 200) {
-        setEditNota(true);
-        onReload();
+        setEditNota(true)
+        setCotizacionData(prevState => ({
+          ...prevState,
+          nota: nota
+        }))
+        onReload()
       }
     } catch (error) {
-      console.error('Error al actualizar la nota:', error.response?.data || error.message);
+      console.error('Error al actualizar la nota:', error.response?.data || error.message)
     }
-  };
-
-  useEffect(() => {
-    if (cotizacion?.nota !== undefined) {
-      setEditNota(!!cotizacion?.nota);
-    }
-  }, [cotizacion?.nota]);
+  }
 
   const handleDelete = async () => {
     if (!cotizacion?.id) {
-      console.error("Cotización o ID no disponible");
+      console.error("Cotización o ID no disponible")
       return;
     }
 
     try {
-      await axios.delete(`/api/cotizaciones/cotizaciones?id=${cotizacion.id}`);
+      await axios.delete(`/api/cotizaciones/cotizaciones?id=${cotizacion.id}`)
       onOpenClose()
       cotizacionSeleccionado(null)
       onReload()
@@ -139,6 +183,94 @@ export function CotizacionDetalles(props) {
       console.error("Error al eliminar la cotización:", error)
     }
   }
+
+  const [cotizacionData, setCotizacionData] = useState(cotizacion)
+
+  useEffect(() => {
+    setCotizacionData(cotizacion)
+  }, [cotizacion])
+
+  const actualizarCotizacion = (nuevaData) => {
+    setCotizacionData((prevState) => ({
+      ...prevState,
+      ...nuevaData,
+    }))
+  }
+
+  useEffect(() => {
+    setEditNota(!!(cotizacionData && cotizacionData.nota))
+  }, [cotizacionData?.nota])
+
+  useEffect(() => {
+    if (cotizacionData?.nota !== undefined) {
+      setEditNota(!!cotizacionData?.nota)
+    }
+  }, [cotizacionData?.nota])
+
+  const [toggleIVA, setToggleIVA] = useState(false)
+  
+  // Cargar el valor inicial de toggleIVA desde IndexedDB
+  useEffect(() => {
+    const fetchToggleIVA = async () => {
+      const storedToggleIVA = await getToggleIVA()
+      setToggleIVA(storedToggleIVA)
+    }
+    fetchToggleIVA()
+  }, [])  
+  
+  const onIVA = () => {
+    setToggleIVA(prevState => {
+      const newState = !prevState;
+      saveToggleIVA(newState) // Guardar el valor en IndexedDB
+      return newState;
+    })
+  }
+  
+  const [ivaValue, setIvaValue] = useState(16)
+  
+  useEffect(() => {
+    const fetchIvaValue = async () => {
+      try {
+        const response = await axios.get(`/api/cotizaciones/cotizaciones?id=${cotizacion.id}`)
+        const iva = response.data?.iva || 16  // Si IVA es null o no existe, se usa 16
+        setIvaValue(iva)
+      } catch (error) {
+        console.error("Error al obtener el IVA:", error)
+      }
+    }
+
+    if (cotizacionId) {
+      fetchIvaValue()
+    }
+  }, [cotizacionId])
+
+  const saveIvaValue = async (newIvaValue) => {
+    try {
+      await axios.put(`/api/cotizaciones/iva?id=${cotizacion.id}`, {
+        iva: newIvaValue
+      })
+    } catch (error) {
+      console.error("Error al actualizar el IVA:", error)
+    }
+  }
+
+  const handleIvaChange = (e) => {
+    const newIvaValue = e.target.value
+    if (/^\d{0,2}$/.test(newIvaValue)) {
+      setIvaValue(newIvaValue)
+      saveIvaValue(newIvaValue)  // Guardar el nuevo valor de IVA directamente
+    }
+  }
+
+  const calcularTotales = () => {
+    const subtotal = cotizacionState?.conceptos?.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0) || 0
+    const ivaDecimal = ivaValue / 100
+    const iva = toggleIVA ? subtotal * ivaDecimal : 0
+    const total = subtotal + iva
+    return { subtotal, iva, total }
+  }
+
+  const { subtotal, iva, total } = calcularTotales()
 
   return (
 
@@ -153,32 +285,32 @@ export function CotizacionDetalles(props) {
           <div className={styles.datos_1}>
             <div>
               <h1>Cotización</h1>
-              <h2>{getValueOrDefault(cotizacion.cotizacion)}</h2>
+              <h2>{getValueOrDefault(cotizacionData?.cotizacion)}</h2>
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(cotizacion.cliente_nombre)}</h2>
+              <h2>{getValueOrDefault(cotizacionData?.cliente_nombre)}</h2>
             </div>
             <div>
               <h1>Contacto</h1>
-              <h2>{getValueOrDefault(cotizacion.cliente_contacto)}</h2>
+              <h2>{getValueOrDefault(cotizacionData?.cliente_contacto)}</h2>
             </div>
           </div>
           <div className={styles.datos_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(cotizacion?.folio)}</h2>
+              <h2>{getValueOrDefault(cotizacionData?.folio)}</h2>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h2>{getValueOrDefault(formatDateIncDet(cotizacion?.createdAt))}</h2>
+              <h2>{getValueOrDefault(formatDateIncDet(cotizacionData?.createdAt))}</h2>
             </div>
           </div>
         </div>
 
         <RowHeadModal rowMain />
 
-        <CotizacionConceptos conceptos={cotizacion?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
+        <CotizacionConceptos conceptos={cotizacionState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
 
         <div className={styles.iconPlus}>
           <div onClick={onOpenCloseConcep}>
@@ -187,54 +319,57 @@ export function CotizacionDetalles(props) {
         </div>
 
         <div className={styles.sectionTotal}>
-          <div className={styles.sectionTotal_1}>
-            <h1>Subtotal:</h1>
+            <div className={styles.sectionTotal_1}>
+              <h1>Subtotal:</h1>
 
-            {!toggleIVA ? (
+              {!toggleIVA ? (
+                <div className={styles.toggleOFF} onClick={onIVA}>
+                  <BiSolidToggleLeft />
+                  <h1>IVA:</h1>
+                </div>
+              ) : (
+                <div className={styles.toggleON}>
+                  <Form>
+                    <FormGroup>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
+                    </FormGroup>
+                  </Form>
+                  <h1>%</h1>
+                  <BiSolidToggleRight onClick={onIVA} />
+                  <h1>IVA:</h1>
+                </div>
+              )}
 
-              <div className={styles.toggleOFF}>
-                <BiSolidToggleLeft onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
+              <h1>Total:</h1>
+            </div>
 
-            ) : (
+            <div className={styles.sectionTotal_2}>
+              
+              {!toggleIVA ? (
+                <>
+                  <h1>-</h1>
+                  <h1>-</h1>
+                </>
+              ) : (
+                <>
+                  <h1>${formatCurrency(subtotal)}</h1>
+                  <h1>${formatCurrency(iva)}</h1>
+                </>
+              )}
 
-              <div className={styles.toggleON}>
-                <BiSolidToggleRight onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
-
-            )}
-
-            <h1>Total:</h1>
-          </div>
-
-          <div className={styles.sectionTotal_2}>
-
-            {!toggleIVA ? (
-              <>
-
-                <h1>-</h1>
-                <h1>-</h1>
-
-              </>
-            ) : (
-              <>
-
+              {!toggleIVA ? (
                 <h1>${formatCurrency(subtotal)}</h1>
-                <h1>${formatCurrency(iva)}</h1>
-
-              </>
-            )}
-
-            {!toggleIVA ? (
-              <h1>${formatCurrency(subtotal)}</h1>
-            ) : (
-              <h1>${formatCurrency(total)}</h1>
-            )}
-
+              ) : (
+                <h1>${formatCurrency(total)}</h1>
+              )}
+            </div>
           </div>
-        </div>
 
         <div className={styles.toggleNota}>
           <h1>Nota</h1>
@@ -260,19 +395,19 @@ export function CotizacionDetalles(props) {
           </Form>
         </div>
 
-        <div className={styles.iconEdit} onClick={onOpenEditCotizacion}>
-          <div><FaEdit /></div>
+        <div className={styles.iconEdit}>
+          <div onClick={onOpenEditCotizacion}><FaEdit /></div>
         </div>
         <div className={styles.iconDel}>
           <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
         </div>
 
-        <CotizacionPDF cotizacion={cotizacion} conceptos={cotizacion?.conceptos || []} />
+        <CotizacionPDF cotizacionData={cotizacionData} conceptos={cotizacionState?.conceptos || []} ivaValue={ivaValue} />
 
       </div>
 
       <BasicModal title='modificar la cotización' show={showEditRecibo} onClose={onOpenEditCotizacion}>
-        <CotizacionEditForm reload={reload} onReload={onReload} cotizacion={cotizacion} onOpenEditCotizacion={onOpenEditCotizacion} onToastSuccessMod={onToastSuccessMod} />
+        <CotizacionEditForm reload={reload} onReload={onReload} cotizacionData={cotizacionData} actualizarCotizacion={actualizarCotizacion} onOpenEditCotizacion={onOpenEditCotizacion} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
@@ -283,6 +418,7 @@ export function CotizacionDetalles(props) {
         <CotizacionConceptosEditForm
           reload={reload}
           onReload={onReload}
+          onEditConcept={onEditConcept}
           conceptToEdit={currentConcept}
           onOpenCloseEditConcep={onOpenCloseEditConcep}
           onOpenCloseConfirm={onOpenCloseConfirm}

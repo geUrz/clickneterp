@@ -46,10 +46,14 @@ export function ReciboConceptosForm(props) {
     }
 
     if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
+
+      const total = newConcept.precio * newConcept.cantidad
+
       try {
         const response = await axios.post(`/api/recibos/conceptos`, {
           recibo_id: reciboId,
           ...newConcept,
+          total
         })
 
         if ((response.status === 200 || response.status === 201) && response.data) {

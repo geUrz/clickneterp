@@ -3,13 +3,60 @@ import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } f
 import { formatCurrency, genCOTId } from '@/helpers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useAuth } from '@/contexts/AuthContext'
 import { FaCheck, FaPlus, FaTimes } from 'react-icons/fa'
 import { RowHeadModal } from '../RowHead'
 import styles from './CotizacionForm.module.css'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
+import { ConceptosForm } from '../ConceptosForm'
+import { ConceptosEditForm } from '../ConceptosEditForm'
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CotizacionesDB', 1)
+
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings')
+      }
+    }
+
+    request.onsuccess = (e) => resolve(e.target.result)
+    request.onerror = (e) => reject(e.target.error)
+  })
+}
+
+const saveToggleIVA = async (value) => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readwrite')
+  const store = transaction.objectStore('settings')
+  
+  store.put({ toggleIVA: value }, 'toggleIVA')
+  
+  transaction.oncomplete = () => {
+  }
+  transaction.onerror = (e) => {
+  }
+}
+
+
+const getToggleIVA = async () => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readonly')
+  const store = transaction.objectStore('settings')
+  
+  return new Promise((resolve, reject) => {
+    const request = store.get('toggleIVA')
+    request.onsuccess = (e) => {
+      resolve(e.target.result?.toggleIVA || false)
+    }
+    request.onerror = (e) => {
+      reject(e.target.error)
+    }
+  })
+}
 
 export function CotizacionForm(props) {
 
@@ -20,6 +67,33 @@ export function CotizacionForm(props) {
   const [show, setShow] = useState(false)
 
   const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
+
+  const [showConcep, setShowForm] = useState(false)
+  const onOpenCloseConcep = () => setShowForm((prevState) => !prevState)
+
+  const [showEditConcep, setShowEditConcep] = useState(null)
+  const [conceptoEdit, setConceptoEdit] = useState(null)
+  const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
+
+  const onOpenEditConcep = (index) => {
+    setConceptoEdit(conceptos[index])
+    setShowEditConcep(true)
+  }
+
+  const onCloseEditConcep = () => {
+    setConceptoEdit(null)
+    setShowEditConcep(false)
+  }
+
+  const onOpenCloseConfirm = (index) => {
+    setConceptoAEliminar(index)
+    setShowConfirm(true)
+  }
+
+  const onHideConfirm = () => {
+    setConceptoAEliminar(null)
+    setShowConfirm(false)
+  }
 
   const [toastSuccessCliente, setToastSuccessCliente] = useState(false)
 
@@ -34,23 +108,26 @@ export function CotizacionForm(props) {
   const [cliente_id, setCliente] = useState('')
   const [cotizacion, setCotizacion] = useState('')
   const [conceptos, setConceptos] = useState([])
-  const [nuevoConcepto, setNuevoConcepto] = useState({
-    tipo: '',
-    concepto: '',
-    precio: '',
-    cantidad: ''
-  })
+
   const [toggleIVA, setToggleIVA] = useState(false)
+  
+  useEffect(() => {
+    const fetchToggleIVA = async () => {
+      const storedToggleIVA = await getToggleIVA()
+      setToggleIVA(storedToggleIVA)
+    }
+    fetchToggleIVA()
+  }, [])  
 
-  const onShowConfirm = (index) => {
-    setConceptoAEliminar(index)
-    setShowConfirm(true)
+  const onIVA = () => {
+    setToggleIVA(prevState => {
+      const newState = !prevState;
+      saveToggleIVA(newState) 
+      return newState;
+    })
   }
-
-  const onHideConfirm = () => {
-    setConceptoAEliminar(null)
-    setShowConfirm(false)
-  }
+  
+  const [ivaValue, setIvaValue] = useState(16)
 
   const [errors, setErrors] = useState({})
 
@@ -63,35 +140,6 @@ export function CotizacionForm(props) {
 
     if (!cliente_id) {
       newErrors.cliente_id = 'El campo es requerido'
-    }
-
-    setErrors(newErrors)
-
-    return Object.keys(newErrors).length === 0
-
-  }
-
-  const validarFormConceptos = () => {
-    const newErrors = {}
-
-    if (!nuevoConcepto.tipo) {
-      newErrors.tipo = 'El campo es requerido'
-    }
-
-    if (!nuevoConcepto.concepto) {
-      newErrors.concepto = 'El campo es requerido'
-    }
-
-    if (!nuevoConcepto.precio) {
-      newErrors.precio = 'El campo es requerido'
-    } else if (nuevoConcepto.precio <= 0) {
-      newErrors.precio = 'El precio debe ser mayor a 0'
-    }
-
-    if (!nuevoConcepto.cantidad) {
-      newErrors.cantidad = 'El campo es requerido'
-    } else if (nuevoConcepto.cantidad <= 0) {
-      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
     }
 
     setErrors(newErrors)
@@ -126,12 +174,33 @@ export function CotizacionForm(props) {
       const response = await axios.post('/api/cotizaciones/cotizaciones', {
         folio,
         cliente_id,
-        cotizacion
+        cotizacion,
+        iva: ivaValue
       })
       const cotizacionId = response.data.id
       await Promise.all(conceptos.map(concepto =>
-        axios.post('/api/cotizaciones/conceptos', { cotizacion_id: cotizacionId, ...concepto })
+        axios.post('/api/cotizaciones/conceptos', {
+          cotizacion_id: cotizacionId,
+          tipo: concepto.tipo,
+          concepto: concepto.concepto,
+          precio: concepto.precio,
+          cantidad: concepto.cantidad,
+          total: concepto.total
+        })
       ))
+
+      await axios.post('/api/notificaciones',
+        {
+          title: 'Cotización creada',
+          body: `${cotizacion}`,
+          url: '/cotizaciones'
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
       setCotizacion('')
       setCliente('')
@@ -146,50 +215,31 @@ export function CotizacionForm(props) {
     }
   }
 
-  const añadirConcepto = () => {
-    if (!validarFormConceptos()) {
-      return
-    }
-    setConceptos([...conceptos, nuevoConcepto])
-    setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '' })
+  const añadirConcepto = (concepto) => {
+    const total = concepto.precio * concepto.cantidad
+    setConceptos([...conceptos, { ...concepto, total }])
   }
 
-  const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
-
   const eliminarConcepto = () => {
-    const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar);
-    setConceptos(nuevosConceptos);
-    onHideConfirm();
+    const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar)
+    setConceptos(nuevosConceptos)
+    setShowConfirm(false)
   }
 
   const calcularTotales = () => {
-    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0);
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva;
+    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
+    const ivaDecimal = ivaValue / 100
+    const iva = subtotal * ivaDecimal
+    const total = subtotal + iva
     return { subtotal, iva, total }
-  };
+  }
 
   const { subtotal, iva, total } = calcularTotales()
 
-  useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
-    if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
-
-  const onIVA = () => {
-    setToggleIVA(prevState => (!prevState))
+  const handleIvaChange = (e) => {
+    let value = e.target.value
+    if (/^\d{0,2}$/.test(value)) setIvaValue(value)
   }
-
-  const opcionesSerprod = [
-    { key: 1, text: 'Servicio', value: 'Servicio' },
-    { key: 2, text: 'Producto', value: 'Producto' }
-  ]
 
   return (
 
@@ -216,7 +266,7 @@ export function CotizacionForm(props) {
         <FormField error={!!errors.cliente_id}>
           <Label>Cliente</Label>
           <Dropdown
-            placeholder='Selecciona un cliente'
+            placeholder='Seleccionar'
             fluid
             selection
             options={clientes.map(cliente => ({
@@ -233,57 +283,13 @@ export function CotizacionForm(props) {
           </div>
           {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
         </FormField>
-        <Form>
-          <FormGroup widths='equal'>
-            <FormField error={!!errors.tipo}>
-              <Label>Tipo</Label>
-              <Dropdown
-                placeholder='Selecciona una opción'
-                fluid
-                selection
-                options={opcionesSerprod}
-                value={nuevoConcepto.tipo}
-                onChange={(e, { value }) => setNuevoConcepto({ ...nuevoConcepto, tipo: value })}
-              />
-              {errors.tipo && <Message negative>{errors.tipo}</Message>}
-            </FormField>
-            <FormField error={!!errors.concepto}>
-              <Label>Concepto</Label>
-              <Input
-                type="text"
-                value={nuevoConcepto.concepto}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, concepto: e.target.value })}
-              />
-              {errors.concepto && <Message negative>{errors.concepto}</Message>}
-            </FormField>
-            <FormField error={!!errors.precio}>
-              <Label>Precio</Label>
-              <Input
-                type="number"
-                value={nuevoConcepto.precio}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, precio: e.target.value === '' ? '' : parseFloat(e.target.value) })}
-              />
-              {errors.precio && <Message negative>{errors.precio}</Message>}
-            </FormField>
-            <FormField error={!!errors.cantidad}>
-              <Label>Qty</Label>
-              <Input
-                type="number"
-                value={nuevoConcepto.cantidad}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, cantidad: e.target.value === '' ? '' : parseInt(e.target.value) })}
-              />
-              {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
-            </FormField>
-          </FormGroup>
-          <Button secondary onClick={añadirConcepto}>Añadir Concepto</Button>
-        </Form>
 
         <div className={styles.section}>
 
           <RowHeadModal rowMain />
 
           {conceptos.map((concepto, index) => (
-            <div key={index} className={styles.rowMap} onClick={() => onShowConfirm(index)}>
+            <div key={index} className={styles.rowMap} onClick={() => onOpenEditConcep(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
               <h1>${formatCurrency(concepto.precio * 1)}</h1>
@@ -292,44 +298,54 @@ export function CotizacionForm(props) {
             </div>
           ))}
 
-          <div className={styles.box3}>
-            <div className={styles.box3_1}>
+          <div className={styles.iconPlus}>
+            <div onClick={onOpenCloseConcep}>
+              <FaPlus />
+            </div>
+          </div>
+
+          <div className={styles.sectionTotal}>
+            <div className={styles.sectionTotal_1}>
               <h1>Subtotal:</h1>
 
               {!toggleIVA ? (
-
                 <div className={styles.toggleOFF} onClick={onIVA}>
                   <BiSolidToggleLeft />
                   <h1>IVA:</h1>
                 </div>
-
               ) : (
-
-                <div className={styles.toggleON} onClick={onIVA}>
-                  <BiSolidToggleRight />
+                <div className={styles.toggleON}>
+                  <Form>
+                    <FormGroup>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
+                    </FormGroup>
+                  </Form>
+                  <h1>%</h1>
+                  <BiSolidToggleRight onClick={onIVA} />
                   <h1>IVA:</h1>
                 </div>
-
               )}
 
               <h1>Total:</h1>
             </div>
 
-            <div className={styles.box3_2}>
-
+            <div className={styles.sectionTotal_2}>
+              
               {!toggleIVA ? (
                 <>
-
                   <h1>-</h1>
                   <h1>-</h1>
-
                 </>
               ) : (
                 <>
-
                   <h1>${formatCurrency(subtotal)}</h1>
                   <h1>${formatCurrency(iva)}</h1>
-
                 </>
               )}
 
@@ -338,10 +354,8 @@ export function CotizacionForm(props) {
               ) : (
                 <h1>${formatCurrency(total)}</h1>
               )}
-
             </div>
           </div>
-
         </div>
 
         <Button primary onClick={crearRecibo}>Crear</Button>
@@ -350,6 +364,25 @@ export function CotizacionForm(props) {
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
         <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
+      </BasicModal>
+
+      <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
+        <ConceptosForm añadirConcepto={añadirConcepto} onOpenCloseConcep={onOpenCloseConcep} />
+      </BasicModal>
+
+      <BasicModal title="Editar concepto" show={showEditConcep} onClose={onOpenEditConcep}>
+        <ConceptosEditForm
+          concepto={conceptoEdit}
+          onSave={(updatedConcepto) => {
+
+            const updatedConceptos = conceptos.map((concepto) =>
+              concepto === conceptoEdit ? updatedConcepto : concepto
+            )
+            setConceptos(updatedConceptos)
+          }}
+          onCloseEditConcep={onCloseEditConcep}
+          onOpenCloseConfirm={onOpenCloseConfirm}
+        />
       </BasicModal>
 
       <Confirm

@@ -7,16 +7,25 @@ import styles from './ReciboConceptosEditForm.module.css'
 
 export function ReciboConceptosEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit } = props
+  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
 
+  const calculateTotal = (precio, cantidad) => {
+    return parseFloat(precio || 0) * parseInt(cantidad || 0)
+  }
+
   const handleChange = (e, { name, value }) => {
-    setNewConcept((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setNewConcept((prevState) => {
+      const updatedConcept = { ...prevState, [name]: value }
+
+      if (name === 'precio' || name === 'cantidad') {
+        updatedConcept.total = calculateTotal(updatedConcept.precio, updatedConcept.cantidad)
+      }
+
+      return updatedConcept;
+    })
   }
 
   const validateForm = () => {
@@ -50,9 +59,11 @@ export function ReciboConceptosEditForm(props) {
         concepto: newConcept.concepto,
         precio: newConcept.precio,
         cantidad: newConcept.cantidad,
+        total: newConcept.total
       })
 
       if (response.status === 200 && response.data) {
+        onEditConcept(newConcept)
         onReload()
         onOpenCloseEditConcep()
       } else {

@@ -10,7 +10,7 @@ import { FaPlus } from 'react-icons/fa'
 
 export function ReporteEditForm(props) {
 
-  const { reload, onReload, reporte, onOpenEditReporte, onToastSuccessMod } = props
+  const { reload, onReload, reporteData, actualizarReporte, onOpenEditReporte, onToastSuccessMod } = props
 
   const [show, setShow] = useState(false)
 
@@ -26,9 +26,9 @@ export function ReporteEditForm(props) {
   }
 
   const [formData, setFormData] = useState({
-    reporte: reporte.reporte,
-    cliente_id: reporte.cliente_id,
-    descripcion: reporte.descripcion
+    reporte: reporteData.reporte,
+    cliente_id: reporteData.cliente_id,
+    descripcion: reporteData.descripcion
   })
 
   const [errors, setErrors] = useState({})
@@ -88,10 +88,12 @@ export function ReporteEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/reportes/reportes?id=${reporte.id}`, {
+      await axios.put(`/api/reportes/reportes?id=${reporteData.id}`, {
         ...formData
       })
+      const clienteNombre = clientes.find(c => c.id === formData.cliente_id)?.nombre || ''
       onReload()
+      actualizarReporte({ ...formData, cliente_nombre: clienteNombre })
       onOpenEditReporte()
       onToastSuccessMod()
     } catch (error) {

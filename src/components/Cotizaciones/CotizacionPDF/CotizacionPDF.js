@@ -4,16 +4,46 @@ import 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import styles from './CotizacionPDF.module.css'
+import { formatPrice, formatQuantity, formatTipo, formatTotal } from '@/helpers/formatPrice'
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CotizacionesDB', 1)
+
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings')
+      }
+    };
+
+    request.onsuccess = (e) => resolve(e.target.result)
+    request.onerror = (e) => reject(e.target.error)
+  })
+};
+
+// Función para obtener el valor de toggleIVA desde IndexedDB
+const getToggleIVA = async () => {
+  const db = await openDB()
+  const transaction = db.transaction('settings', 'readonly')
+  const store = transaction.objectStore('settings')
+
+  return new Promise((resolve, reject) => {
+    const request = store.get('toggleIVA')
+    request.onsuccess = (e) => resolve(e.target.result?.toggleIVA || false) // Devuelve true por defecto
+    request.onerror = (e) => reject(e.target.error)
+  })
+}
 
 export function CotizacionPDF(props) {
 
-  const { cotizacion, conceptos } = props
+  const { cotizacionData, conceptos, ivaValue } = props
 
   const generarPDF = async () => {
 
-    if (!cotizacion) return
+    if (!cotizacionData) return
 
-    const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'true');
+    const toggleIVA = await getToggleIVA()
 
     const doc = new jsPDF(
       {
@@ -43,32 +73,32 @@ export function CotizacionPDF(props) {
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('#######', 15, 23)
+    doc.text('CLICKNETMX', 15, 23)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('###################', 15, 27)
-    doc.text('####################', 15, 31)
-    doc.text('###################', 15, 35)
-    doc.text('#########', 15, 39)
+    doc.text('Punta Este Corporativo', 15, 27)
+    doc.text('Calzada Carranza 951,', 15, 31)
+    doc.text('Piso 10 Suite 304, Interior "E"', 15, 35)
+    doc.text('C.P. 2125', 15, 39)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('############################', 15, 43)
+    doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('##############', 15, 47)
+    doc.text('RFC: EIEJ8906244J3', 15, 47)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Cliente', 15, 54)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(cotizacion.cliente_nombre)}`, 15, 58)
+    doc.text(`${getValueOrDefault(cotizacionData.cliente_nombre)}`, 15, 58)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Atención a', 15, 64)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(cotizacion.cliente_contacto)}`, 15, 68)
+    doc.text(`${getValueOrDefault(cotizacionData.cliente_contacto)}`, 15, 68)
 
     doc.setFontSize(`${font1}`)
     doc.setFont("helvetica", "bold")
@@ -80,7 +110,7 @@ export function CotizacionPDF(props) {
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${cotizacion.folio}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${cotizacion.folio}`), 54)
+    doc.text(`${cotizacionData.folio}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${cotizacionData.folio}`), 54)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -88,8 +118,8 @@ export function CotizacionPDF(props) {
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text(
-      `${formatDateIncDet(cotizacion.createdAt)}`,
-      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${formatDateIncDet(cotizacion.createdAt)}`),
+      `${formatDateIncDet(cotizacionData.createdAt)}`,
+      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${formatDateIncDet(cotizacionData.createdAt)}`),
       64
     )
 
@@ -109,11 +139,11 @@ export function CotizacionPDF(props) {
         cellWidth: 'auto',
       },
       body: conceptos.map(concepto => [
-        { content: `${concepto.tipo}`, styles: { halign: 'center' } },
+        { content: `${formatTipo(concepto.tipo)}`, styles: { halign: 'center' } },
         { content: `${concepto.concepto}`, styles: { halign: 'left' } },
-        { content: `$${formatCurrency(concepto.precio)}`, styles: { halign: 'right' } },
-        { content: `${concepto.cantidad}`, styles: { halign: 'center' } },
-        { content: `$${formatCurrency(concepto.precio * concepto.cantidad)}`, styles: { halign: 'right' } },
+        { content: `${formatPrice(concepto.precio)}`, styles: { halign: 'right' } },
+        { content: `${formatQuantity(concepto.cantidad)}`, styles: { halign: 'center' } },
+        { content: `${formatTotal(concepto.precio, concepto.cantidad)}`, styles: { halign: 'right' } },
       ]),
       headStyles: {
         fillColor: [255, 255, 255],
@@ -141,30 +171,30 @@ export function CotizacionPDF(props) {
 
     const calcularTotales = () => {
       const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
-      const iva = subtotal * 0.16
+      const iva = subtotal * (ivaValue / 100)
       const total = toggleIVA ? subtotal + iva : subtotal
-      return { subtotal, iva, total };
-    };
-
+      return { subtotal, iva, total }
+    }
+    
     const { subtotal, iva, total } = calcularTotales()
 
-    const top = 230
+    const top = 235
     const boxWidth = 130
     const boxHeight = 30
 
     doc.setDrawColor(255, 255, 255)
     doc.rect(marginRight, top, boxWidth, boxHeight)
 
-    doc.setFontSize(`${font2}`)
-    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(`${font3}`)
+    doc.setTextColor(0, 0, 0)
     doc.text('Nota:', marginRight, top - 1)
 
     doc.setFontSize(`${font3}`)
     doc.setTextColor(80, 80, 80)
-    const content = cotizacion.nota === undefined || cotizacion.nota === null ? (
+    const content = cotizacionData.nota === undefined || cotizacionData.nota === null ? (
       ''
     ) : (
-      `${cotizacion.nota}`
+      `${cotizacionData.nota}`
     )
 
 
@@ -207,12 +237,12 @@ export function CotizacionPDF(props) {
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 50, 260)
     doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)
-    doc.text('  por defecto de fabrica.', 50, 270)
-    doc.text('• Esta cotización tiene una vigencia de 30 dias', 50, 275)
+    doc.text('  por defecto de fabrica. Aplican restricciones.', 50, 270)
+    doc.text('• Esta cotización tiene una vigencia de 15 dias', 50, 275)
 
     const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
-    doc.addImage(qrCodeDataUrl, 'PNG', 10, 248, 40, 40)
+    doc.addImage(qrCodeDataUrl, 'PNG', 10, 252, 40, 40)
 
     const addFooterText = () => {
       const text = 'www.clicknetmx.com'
@@ -226,7 +256,7 @@ export function CotizacionPDF(props) {
 
     addFooterText()
 
-    doc.save(`cotizacion_${cotizacion.folio}.pdf`)
+    doc.save(`cotizacion_${cotizacionData.folio}.pdf`)
   }
 
   return (

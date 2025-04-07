@@ -1,4 +1,4 @@
-import connection from '@/libs/db'; // Asegúrate de importar la configuración de la base de datos
+import {connection} from '@/libs/db'; // Asegúrate de importar la configuración de la base de datos
 import bcrypt from 'bcrypt';
 
 export default async function registerHandler(req, res) {

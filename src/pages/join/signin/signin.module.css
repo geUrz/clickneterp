@@ -10,11 +10,13 @@
 
 .user svg, .user path{
   font-size: 80px;
+  color: azure;
 }
 
 .user h1{
   margin-top: 10px;
   font-size: 18px;
+  color: azure;
 }
 
 .link{
@@ -30,10 +32,4 @@
   font-size: 14.5px;
   color: var(--clrBL2);
   cursor: pointer;
-}
-
-.error{
-  margin: 5px 0 0 0 !important;
-  font-size: 12px;
-  color: red;
 }

@@ -21,17 +21,20 @@ export function CotizacionConceptosForm(props) {
   const validateForm = () => {
     const newErrors = {}
 
-    if (!newConcept.tipo) {
-      newErrors.tipo = 'El campo es requerido'
-    }
-    if (!newConcept.concepto) {
-      newErrors.concepto = 'El campo es requerido'
-    }
-    if (!newConcept.cantidad || newConcept.cantidad <= 0) {
-      newErrors.cantidad = 'El campo es requerido'
-    }
-    if (!newConcept.precio || newConcept.precio <= 0) {
-      newErrors.precio = 'El campo es requerido'
+    // Validar solo si tipo no es "<vacio>"
+    if (newConcept.tipo !== '.') {
+      if (!newConcept.tipo) {
+        newErrors.tipo = 'El campo es requerido'
+      }
+      if (!newConcept.concepto) {
+        newErrors.concepto = 'El campo es requerido'
+      }
+      if (!newConcept.cantidad || newConcept.cantidad <= 0) {
+        newErrors.cantidad = 'El campo es requerido'
+      }
+      if (!newConcept.precio || newConcept.precio <= 0) {
+        newErrors.precio = 'El campo es requerido'
+      }
     }
 
     setErrors(newErrors)
@@ -45,7 +48,7 @@ export function CotizacionConceptosForm(props) {
       return
     }
 
-    if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
+    if (newConcept.tipo && (newConcept.tipo === '.' || (newConcept.concepto && newConcept.precio && newConcept.cantidad))) {
       try {
         const response = await axios.post(`/api/cotizaciones/conceptos`, {
           cotizacion_id: cotizacionId,
@@ -78,7 +81,8 @@ export function CotizacionConceptosForm(props) {
 
   const opcionesSerprod = [
     { key: 1, text: 'Servicio', value: 'Servicio' },
-    { key: 2, text: 'Producto', value: 'Producto' }
+    { key: 2, text: 'Producto', value: 'Producto' },
+    { key: 3, text: '<vacio>', value: '.' }
   ]
 
   return (
@@ -94,7 +98,7 @@ export function CotizacionConceptosForm(props) {
               <Label>Tipo</Label>
               <Dropdown
                 name="tipo"
-                placeholder='Selecciona una opción'
+                placeholder='Seleccionar'
                 fluid
                 selection
                 options={opcionesSerprod}
@@ -120,6 +124,7 @@ export function CotizacionConceptosForm(props) {
                 name="precio"
                 value={newConcept.precio}
                 onChange={handleChange}
+                disabled={newConcept.tipo === '.'}  // Deshabilitar si el tipo es "<vacio>"
               />
               {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
@@ -130,6 +135,7 @@ export function CotizacionConceptosForm(props) {
                 name="cantidad"
                 value={newConcept.cantidad}
                 onChange={handleChange}
+                disabled={newConcept.tipo === '.'}  // Deshabilitar si el tipo es "<vacio>"
               />
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>

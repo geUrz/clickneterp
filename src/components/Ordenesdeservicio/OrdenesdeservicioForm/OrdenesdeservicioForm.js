@@ -96,6 +96,21 @@ export function OrdenesdeservicioForm(props) {
         descripcion
       })
 
+      await axios.post('/api/notificaciones', 
+        {
+          title: 'Orden de servicio creado',
+          body: `${ordendeservicio}`,
+          data: {
+            url: '/ordenesdeservicio' 
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', 
+          },
+        }
+      )
+
       setOrdendeservicio('')
       setCliente('')
       setDescripcion('')

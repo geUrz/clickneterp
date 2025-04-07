@@ -2,12 +2,12 @@ import {connection} from "@/libs/db";
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const { cotizacion_id, tipo, concepto, precio, cantidad } = req.body
+        const { cotizacion_id, tipo, concepto, precio, cantidad, total } = req.body
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO conceptoscot (cotizacion_id, tipo, concepto, precio, cantidad ) VALUES (?, ?, ?, ?, ?)',
-                [cotizacion_id, tipo, concepto, precio, cantidad ]
+                'INSERT INTO conceptoscot (cotizacion_id, tipo, concepto, precio, cantidad, total ) VALUES (?, ?, ?, ?, ?, ?)',
+                [cotizacion_id, tipo, concepto, precio, cantidad, total ]
             );
             res.status(201).json({ id: result.insertId })
         } catch (error) {
@@ -44,12 +44,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'PUT') {
         const { id } = req.query
-        const { tipo, concepto, precio, cantidad } = req.body
+        const { tipo, concepto, precio, cantidad, total } = req.body
 
         try {
             const [result] = await connection.query(
-                'UPDATE conceptoscot SET tipo = ?, concepto = ?, precio = ?, cantidad = ? WHERE id = ?',
-                [tipo, concepto, precio, cantidad, id]
+                'UPDATE conceptoscot SET tipo = ?, concepto = ?, precio = ?, cantidad = ?, total = ? WHERE id = ?',
+                [tipo, concepto, precio, cantidad, total, id]
             );
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Concepto no encontrado' })

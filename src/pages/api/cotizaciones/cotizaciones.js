@@ -14,6 +14,7 @@ export default async function handler(req, res) {
                         cliente_id,
                         cotizacion,
                         nota, 
+                        iva,
                         createdAt
                     FROM 
                         cotizaciones
@@ -81,6 +82,7 @@ export default async function handler(req, res) {
                         clientes.nombre AS cliente_nombre,
                         clientes.contacto AS cliente_contacto,  
                         cotizaciones.cotizacion,  
+                        cotizaciones.iva,  
                         cotizaciones.nota,   
                         cotizaciones.createdAt  
                     FROM cotizaciones
@@ -98,12 +100,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Maneja la solicitud POST
-        const { folio, cliente_id, cotizacion } = req.body;
+        const { folio, cliente_id, cotizacion, iva } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO cotizaciones (folio, cliente_id, cotizacion) VALUES (?, ?, ?)',
-                [folio, cliente_id, cotizacion]
+                'INSERT INTO cotizaciones (folio, cliente_id, cotizacion, iva) VALUES (?, ?, ?, ?)',
+                [folio, cliente_id, cotizacion, iva]
             )
             res.status(201).json({ id: result.insertId })
         } catch (error) {

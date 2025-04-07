@@ -11,15 +11,15 @@ import { ToastSuccess } from '@/components/Layouts'
 
 export function ReciboEditForm(props) {
 
-  const { reload, onReload, recibo, onOpenEditRecibo, onToastSuccessMod } = props
+  const { reload, onReload, reciboData, actualizarRecibo, onOpenEditRecibo, onToastSuccessMod } = props
 
   const [show, setShow] = useState(false)
 
   const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
 
   const [formData, setFormData] = useState({
-    recibo: recibo.recibo,
-    cliente_id: recibo.cliente_id
+    recibo: reciboData.recibo,
+    cliente_id: reciboData.cliente_id
   })
   
   const [errors, setErrors] = useState({})
@@ -74,10 +74,12 @@ export function ReciboEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/recibos/recibos?id=${recibo.id}`, {
+      await axios.put(`/api/recibos/recibos?id=${reciboData.id}`, {
         ...formData,
       })
+      const clienteNombre = clientes.find(c => c.id === formData.cliente_id)?.nombre || ''
       onReload()
+      actualizarCotizacion({ ...formData, cliente_nombre: clienteNombre })
       onOpenEditRecibo()
       onToastSuccessMod()
     } catch (error) {
